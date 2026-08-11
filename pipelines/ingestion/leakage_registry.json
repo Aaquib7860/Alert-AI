@@ -1,0 +1,18 @@
+{
+  "CustomerViolation": [
+    "Maker Name",
+    "Maker Comment Date",
+    "Maker Comment",
+    "Alert Closure Date & Time"
+  ],
+  "TransactionNameViolation": [
+    "Maker Name",
+    "Maker Comment Date",
+    "Maker Comment"
+  ],
+  "Rule": [
+    "Comment",
+    "Actiondate",
+    "Action Taken By"
+  ]
+}

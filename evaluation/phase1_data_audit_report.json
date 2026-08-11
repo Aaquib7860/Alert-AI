@@ -1,0 +1,200 @@
+{
+  "phase": "1_data_audit",
+  "status": "PASS",
+  "dataset_version": "v1",
+  "raw_data_path": "/home/chpl/Documents/AI-validation/AI_validator/Alert-AI/data/raw/Alerts_Samples.xlsx",
+  "schema_check": {
+    "CustomerViolation": {
+      "rows": 2397,
+      "cols": 23,
+      "expected_rows": 2397,
+      "expected_cols": 23,
+      "match": true
+    },
+    "TransactionNameViolation": {
+      "rows": 2000,
+      "cols": 25,
+      "expected_rows": 2000,
+      "expected_cols": 25,
+      "match": true
+    },
+    "Rule": {
+      "rows": 2244,
+      "cols": 24,
+      "expected_rows": 2244,
+      "expected_cols": 24,
+      "match": true
+    }
+  },
+  "duplicate_rows": {
+    "CustomerViolation": 8,
+    "TransactionNameViolation": 537,
+    "Rule": 0
+  },
+  "unique_identifier_counts": {
+    "CustomerViolation": {
+      "UIN": 1232
+    },
+    "TransactionNameViolation": {
+      "UIN": 373,
+      "Trxn Ref Number": 402
+    },
+    "Rule": {
+      "Customer Number": 1106,
+      "Reference Number": 1619
+    }
+  },
+  "missingness_pct_by_field": {
+    "CustomerViolation": {
+      "Hit Details (Aditional Information)": 100.0,
+      "Trxn Type": 100.0,
+      "Alerted Party POB": 100.0,
+      "Hit Details (POB)": 100.0,
+      "Hit Details (Nationality)": 64.4,
+      "Hit Details (DOB)": 30.2,
+      "Maker Comment": 8.1,
+      "Maker Comment Date": 8.1,
+      "Maker Name": 8.1,
+      "Alerted Party DOB": 1.8,
+      "Branch Name": 0.0,
+      "Alert Status": 0.0,
+      "Alert Type": 0.0,
+      "Alert Generated Date & Time": 0.0,
+      "UIN": 0.0,
+      "Alerted Party": 0.0,
+      "Sanctions Screening List Name": 0.0,
+      "Matched Screening %": 0.0,
+      "Customer Type": 0.0,
+      "Hit Details (Name)": 0.0,
+      "Alerted Party Nationality": 0.0,
+      "Alerted Party Name": 0.0,
+      "Alert Closure Date & Time": 0.0
+    },
+    "TransactionNameViolation": {
+      "Hit Details (POB)": 100.0,
+      "Hit Details (Aditional Information)": 100.0,
+      "Alerted Party POB": 100.0,
+      "Alerted Party DOB": 78.8,
+      "Hit Details (DOB)": 62.2,
+      "Hit Details (Nationality)": 5.9,
+      "Alerted Party Nationality": 4.2,
+      "Maker Comment Date": 1.5,
+      "Maker Name": 1.5,
+      "Maker Comment": 1.5,
+      "Alert Status": 0.1,
+      "Hit Details (Name)": 0.0,
+      "Alerted Party Name": 0.0,
+      "Customer Type": 0.0,
+      "Transaction Status": 0.0,
+      "Trxn Ref Number": 0.0,
+      "Matched Screening %": 0.0,
+      "Sanctions Screening List Name": 0.0,
+      "Alerted Party": 0.0,
+      "Branch Name": 0.0,
+      "Alert Generated Date & Time": 0.0,
+      "Alert Type": 0.0,
+      "Trxn date & Time": 0.0,
+      "Trxn Type": 0.0,
+      "UIN": 0.0
+    },
+    "Rule": {
+      "Beneficiary Id Number": 97.1,
+      "Beneficiary Relationship": 22.9,
+      "Beneficiary Name": 22.9,
+      "Currency Name": 16.9,
+      "Purpose": 14.8,
+      "Purpose Code": 14.8,
+      "Branch Code": 8.1,
+      "Customer Currency": 2.2,
+      "Customer Number": 2.2,
+      "Comment": 0.1,
+      "Customer Nationality": 0.0,
+      "Customer Name": 0.0,
+      "Transaction Created By": 0.0,
+      "Transaction Date": 0.0,
+      "Reference Number": 0.0,
+      "Transaction Type Code": 0.0,
+      "Branch Description": 0.0,
+      "Status": 0.0,
+      "Scan Date": 0.0,
+      "Actiondate": 0.0,
+      "Action Taken By": 0.0,
+      "Rule Type": 0.0,
+      "Rule Name": 0.0,
+      "Rule Description": 0.0
+    }
+  },
+  "label_outcome_audit": {
+    "CustomerViolation": {
+      "status_distribution": {
+        "Released": 2204,
+        "UPS": 193
+      },
+      "n_ups": 193,
+      "ups_rows_containing_false_positive_comment": 185,
+      "total_rows_containing_false_positive_comment": 2155
+    },
+    "TransactionNameViolation": {
+      "status_distribution": {
+        "Released": 1970,
+        "UPS": 28,
+        "nan": 2
+      },
+      "n_ups": 28,
+      "ups_rows_containing_false_positive_comment": 28,
+      "total_rows_containing_false_positive_comment": 1881
+    },
+    "Rule": {
+      "status_distribution": {
+        "Released": 1983,
+        "UPS": 260,
+        "Followup": 1
+      },
+      "n_ups": 260,
+      "ups_rows_containing_false_positive_comment": 1,
+      "total_rows_containing_false_positive_comment": 74
+    }
+  },
+  "leakage_registry": {
+    "CustomerViolation": [
+      "Maker Name",
+      "Maker Comment Date",
+      "Maker Comment",
+      "Alert Closure Date & Time"
+    ],
+    "TransactionNameViolation": [
+      "Maker Name",
+      "Maker Comment Date",
+      "Maker Comment"
+    ],
+    "Rule": [
+      "Comment",
+      "Actiondate",
+      "Action Taken By"
+    ]
+  },
+  "temporal_integrity": {
+    "TransactionNameViolation_alert_before_trxn": {
+      "count": 1605,
+      "of": 2000,
+      "pct": 80.2
+    },
+    "Rule_scan_before_trxn": {
+      "count": 328,
+      "of": 2244,
+      "pct": 14.6
+    },
+    "CustomerViolation_closure_before_alert": {
+      "count": 3,
+      "of": 2397,
+      "pct": 0.1
+    }
+  },
+  "warnings": [
+    "POB is 100% missing in both name-alert sheets -- excluded from all feature work until the client provides source data.",
+    "Rule sheet has no clean structured transaction amount field -- do not depend on comment-parsed amounts in production.",
+    "TransactionNameViolation alert-generated timestamp precedes the transaction timestamp in 80.2% of rows, and Rule scan date precedes transaction date in 14.6% of rows -- business semantics must be confirmed with the client before building any time-based feature on these fields.",
+    "UPS status cannot be treated as a true-match label -- comment text contradicts it in a majority of UPS rows for two of the three sheets."
+  ],
+  "next_gate": "Phase 2 -- data pipeline / normalization. Requires human approval before proceeding."
+}
