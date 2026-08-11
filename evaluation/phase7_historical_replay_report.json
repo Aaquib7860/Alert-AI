@@ -1,0 +1,194 @@
+{
+  "phase": "7_historical_replay",
+  "status": "PASS",
+  "reproducibility": {
+    "entity_champion_max_abs_score_diff": 0.0,
+    "transaction_champion_max_abs_score_diff": 0.0,
+    "both_bit_for_bit_reproducible": true
+  },
+  "validation_manifests": {
+    "entity": "evaluation/validation_manifests/phase5_entity_unseen_customers_manifest.json",
+    "transaction": "evaluation/validation_manifests/phase6_transaction_unseen_customers_manifest.json"
+  },
+  "walk_forward": {
+    "entity": [
+      {
+        "fold_index": 0,
+        "skipped": true,
+        "reason": "train size 0 < min_train_size 50",
+        "n_train": 0,
+        "n_score": 1100
+      },
+      {
+        "fold_index": 1,
+        "skipped": false,
+        "n_train": 1100,
+        "n_score": 1099,
+        "score_mean": -17.715272947127907,
+        "score_std": 4.319832924303881,
+        "score_min": -27.01943553725651,
+        "score_max": -9.339527713680532
+      },
+      {
+        "fold_index": 2,
+        "skipped": false,
+        "n_train": 2199,
+        "n_score": 1099,
+        "score_mean": -35.243641234165054,
+        "score_std": 8.298274601763628,
+        "score_min": -48.51640487386404,
+        "score_max": -14.14437524540434
+      },
+      {
+        "fold_index": 3,
+        "skipped": false,
+        "n_train": 3298,
+        "n_score": 1099,
+        "score_mean": -41.59220550271124,
+        "score_std": 10.481880870111874,
+        "score_min": -58.374988628701786,
+        "score_max": -16.669246710010952
+      }
+    ],
+    "transaction": [
+      {
+        "fold_index": 0,
+        "skipped": true,
+        "reason": "train size 0 < min_train_size 50",
+        "n_train": 0,
+        "n_score": 561
+      },
+      {
+        "fold_index": 1,
+        "skipped": false,
+        "n_train": 561,
+        "n_score": 561,
+        "score_mean": -12.841213405913418,
+        "score_std": 1.0643941876688845,
+        "score_min": -15.158761898799115,
+        "score_max": -2.0936759014241826
+      },
+      {
+        "fold_index": 2,
+        "skipped": false,
+        "n_train": 1122,
+        "n_score": 561,
+        "score_mean": -24.80377787319899,
+        "score_std": 7.013276747856215,
+        "score_min": -30.571039098045723,
+        "score_max": -0.0
+      },
+      {
+        "fold_index": 3,
+        "skipped": false,
+        "n_train": 1683,
+        "n_score": 561,
+        "score_mean": -47.93313190175505,
+        "score_std": 0.8165746381082845,
+        "score_min": -50.92261412303953,
+        "score_max": -45.70033382720367
+      }
+    ]
+  },
+  "findings": [
+    "OCSVM raw score scale drifts across walk-forward retrains for both champions -- not a defect, but decisive evidence that any production routing threshold must be calibrated against the current population, never a hardcoded absolute score cutoff."
+  ],
+  "definition_of_done": [
+    {
+      "item": "The three alert types are supported.",
+      "status": "PASS",
+      "evidence": "Phase 1-4: schema, normalization, features for CustomerViolation, TransactionNameViolation, Rule"
+    },
+    {
+      "item": "The current XLSX can be processed end-to-end.",
+      "status": "PASS",
+      "evidence": "Phase 1-2: load_raw_alerts -> run_phase2_pipeline, 6,641 rows, 0 schema failures"
+    },
+    {
+      "item": "No LLM or paid AI API is required.",
+      "status": "PASS",
+      "evidence": "scikit-learn/PyTorch only, verified by dependency list (requirements.txt)"
+    },
+    {
+      "item": "No hardcoded matching-weight decision engine exists.",
+      "status": "PASS",
+      "evidence": "No RapidFuzz/Levenshtein/manual weights anywhere in pipelines/ or features/"
+    },
+    {
+      "item": "No post-review leakage fields enter live inference.",
+      "status": "PASS",
+      "evidence": "Phase 1 leakage registry + Phase 3/4 static import-time guards + tests"
+    },
+    {
+      "item": "Duplicate and repeated-entity leakage is controlled.",
+      "status": "PASS",
+      "evidence": "Phase 2: exact dup detection + near-dup candidates; group-split validation"
+    },
+    {
+      "item": "Entity and transaction pipelines are separated.",
+      "status": "PASS",
+      "evidence": "features/entity_features.py vs features/transaction_features.py, separate champions"
+    },
+    {
+      "item": "At least Isolation Forest and Autoencoder have been fairly benchmarked.",
+      "status": "PASS",
+      "evidence": "Phase 5 (E1-E5) and Phase 6 (T1-T5), both under 2 validation scenarios"
+    },
+    {
+      "item": "A champion model is selected using documented evidence.",
+      "status": "PASS",
+      "evidence": "pipelines/entity/evaluation.py:select_champion, rubric persisted in both reports"
+    },
+    {
+      "item": "Historical replay is reproducible.",
+      "status": "PASS",
+      "evidence": "Section 2 above -- bit-for-bit identical scores confirmed for both champions"
+    },
+    {
+      "item": "Top-N novelty ranking can be demonstrated.",
+      "status": "PASS",
+      "evidence": "Phase 5/6 section 7/8 top_n_novelty_table"
+    },
+    {
+      "item": "Customer-specific historical context is demonstrated where data permits.",
+      "status": "PASS",
+      "evidence": "Phase 3/4 build_historical_customer_context, Phase 5/6 customer_history_consistency"
+    },
+    {
+      "item": "Rule-specific analysis is demonstrated.",
+      "status": "PASS",
+      "evidence": "Phase 6 section 7 novelty_by_segment(..., 'Rule Name')"
+    },
+    {
+      "item": "The scoring API works for single and batch alerts.",
+      "status": "NOT YET",
+      "evidence": "Phase 9 (API implementation) -- not started"
+    },
+    {
+      "item": "Every score is auditable and versioned.",
+      "status": "PARTIAL",
+      "evidence": "Feature/model versions exist on artifacts; API-level score audit record is Phase 9"
+    },
+    {
+      "item": "The dashboard demonstrates the client's future workflow.",
+      "status": "NOT YET",
+      "evidence": "Phase 10 (Demo UI) -- not started"
+    },
+    {
+      "item": "Feedback can be recorded.",
+      "status": "NOT YET",
+      "evidence": "Phase 11 (feedback/monitoring foundations) -- not started"
+    },
+    {
+      "item": "Monitoring and retraining foundations exist.",
+      "status": "NOT YET",
+      "evidence": "Phase 11 -- not started"
+    },
+    {
+      "item": "The report clearly separates exploratory anomaly findings from confirmed supervised performance.",
+      "status": "PASS",
+      "evidence": "Every phase report + this notebook's section 4 finding; exploratory_status_comparison always labeled"
+    }
+  ],
+  "next_gate": "Phase 8 -- FastAPI scoring implementation (single + batch scoring, model info endpoints). Requires human approval."
+}
