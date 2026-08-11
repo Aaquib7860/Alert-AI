@@ -1,0 +1,71 @@
+{
+  "phase": "2_data_pipeline",
+  "generated_at": "2026-08-11T06:09:48.110867+00:00",
+  "dataset_version": "v1-46641a47",
+  "schema_version": "1.0.0",
+  "source_file_sha256": "46641a47be0b720eea0de3aa34b2f6b9d7b8c99ca03f11e8932f94adde4039f1",
+  "sheets": {
+    "CustomerViolation": {
+      "schema_validation": {
+        "sheet_name": "CustomerViolation",
+        "passed": true,
+        "missing_required_columns": [],
+        "unexpected_columns": []
+      },
+      "raw_rows": 2397,
+      "raw_cols": 23,
+      "normalized_cols": 54,
+      "exact_duplicate_rows": 8,
+      "near_duplicate_candidate_rows": 458,
+      "unresolved_field_counts": {
+        "Hit Details (DOB) (Unresolved)": 10,
+        "Hit Details (Nationality) (UnresolvedToken)": 13
+      },
+      "customer_id_null_count": 0
+    },
+    "TransactionNameViolation": {
+      "schema_validation": {
+        "sheet_name": "TransactionNameViolation",
+        "passed": true,
+        "missing_required_columns": [],
+        "unexpected_columns": []
+      },
+      "raw_rows": 2000,
+      "raw_cols": 25,
+      "normalized_cols": 60,
+      "exact_duplicate_rows": 537,
+      "near_duplicate_candidate_rows": 421,
+      "unresolved_field_counts": {
+        "Hit Details (DOB) (Unresolved)": 88,
+        "Hit Details (Nationality) (UnresolvedToken)": 7
+      },
+      "customer_id_null_count": 0
+    },
+    "Rule": {
+      "schema_validation": {
+        "sheet_name": "Rule",
+        "passed": true,
+        "missing_required_columns": [],
+        "unexpected_columns": []
+      },
+      "raw_rows": 2244,
+      "raw_cols": 24,
+      "normalized_cols": 56,
+      "exact_duplicate_rows": 0,
+      "near_duplicate_candidate_rows": 756,
+      "unresolved_field_counts": {},
+      "customer_id_null_count": 49
+    }
+  },
+  "overall_status": "PASS",
+  "storage_stringified_columns": {
+    "CustomerViolation": [],
+    "TransactionNameViolation": [
+      "Alerted Party DOB"
+    ],
+    "Rule": [
+      "Beneficiary Id Number",
+      "Beneficiary Relationship"
+    ]
+  }
+}
