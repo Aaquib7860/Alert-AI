@@ -1,0 +1,34 @@
+# Environments
+.venv/
+venv/
+__pycache__/
+*.pyc
+.env
+
+# Raw client data - NEVER commit (PII)
+data/raw/*
+!data/raw/.gitkeep
+
+# Generated data artifacts
+data/validated/*
+data/normalized/*
+data/processed/*
+!data/validated/.gitkeep
+!data/normalized/.gitkeep
+!data/processed/.gitkeep
+
+# Models/artifacts
+models/entity/*
+models/transaction/*
+models/registry/*
+!models/entity/.gitkeep
+!models/transaction/.gitkeep
+!models/registry/.gitkeep
+
+# Notebooks checkpoints
+.ipynb_checkpoints/
+
+# Misc
+*.egg-info/
+.pytest_cache/
+.DS_Store
