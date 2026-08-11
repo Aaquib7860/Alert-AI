@@ -1,0 +1,291 @@
+{
+  "phase": "5_entity_experiments",
+  "status": "PASS",
+  "experiments_run": [
+    {
+      "experiment_id": "unseen_customers::E1_isolation_forest_tabular",
+      "model_name": "isolation_forest",
+      "representation": "tabular",
+      "validation_scenario": "unseen_customers",
+      "distribution": {
+        "mean": 0.3722481251443115,
+        "std": 0.019116248273460028,
+        "min": 0.3350047594212133,
+        "max": 0.44635810644124135,
+        "p50": 0.36999192063717407,
+        "p90": 0.3963812265353492,
+        "p99": 0.42585508660459864,
+        "is_degenerate": false
+      },
+      "stability_spearman": 0.94399283167164,
+      "history_consistency": {
+        "n_repeat_customers_evaluated": 101,
+        "median_within_customer_std": 0.005462844179104773,
+        "overall_score_std": 0.019116248273460028
+      },
+      "fit_seconds": 0.369,
+      "score_seconds": 0.008
+    },
+    {
+      "experiment_id": "unseen_customers::E2_isolation_forest_name_svd",
+      "model_name": "isolation_forest",
+      "representation": "name_svd",
+      "validation_scenario": "unseen_customers",
+      "distribution": {
+        "mean": 0.387749412405069,
+        "std": 0.031002823863340852,
+        "min": 0.3364497046864553,
+        "max": 0.480052469044047,
+        "p50": 0.3833574410094106,
+        "p90": 0.4334994376329974,
+        "p99": 0.4616796761772129,
+        "is_degenerate": false
+      },
+      "stability_spearman": 0.9733164439829147,
+      "history_consistency": {
+        "n_repeat_customers_evaluated": 101,
+        "median_within_customer_std": 0.00887268950339696,
+        "overall_score_std": 0.031002823863340852
+      },
+      "fit_seconds": 0.457,
+      "score_seconds": 0.009
+    },
+    {
+      "experiment_id": "unseen_customers::E3_autoencoder_name_svd",
+      "model_name": "autoencoder",
+      "representation": "name_svd",
+      "validation_scenario": "unseen_customers",
+      "distribution": {
+        "mean": 0.6019904613494873,
+        "std": 0.4266274869441986,
+        "min": 0.05489136651158333,
+        "max": 2.2453725337982178,
+        "p50": 0.5092247724533081,
+        "p90": 1.19381844997406,
+        "p99": 2.0575759410858154,
+        "is_degenerate": false
+      },
+      "stability_spearman": 0.9990891911379575,
+      "history_consistency": {
+        "n_repeat_customers_evaluated": 101,
+        "median_within_customer_std": 0.08539125323295593,
+        "overall_score_std": 0.4266274869441986
+      },
+      "fit_seconds": 4.88,
+      "score_seconds": 0.001
+    },
+    {
+      "experiment_id": "unseen_customers::E4_lof_name_svd",
+      "model_name": "lof",
+      "representation": "name_svd",
+      "validation_scenario": "unseen_customers",
+      "distribution": {
+        "mean": 1137.8037498828119,
+        "std": 36301.833589016336,
+        "min": 0.9499754836198786,
+        "max": 1160525.393952656,
+        "p50": 1.0845364741058452,
+        "p90": 1.4161987706652277,
+        "p99": 1.8651620093282697,
+        "is_degenerate": false
+      },
+      "stability_spearman": 0.9271895825838056,
+      "history_consistency": {
+        "n_repeat_customers_evaluated": 101,
+        "median_within_customer_std": 0.02774803636168919,
+        "overall_score_std": 36301.833589016336
+      },
+      "fit_seconds": 0.199,
+      "score_seconds": 0.01
+    },
+    {
+      "experiment_id": "unseen_customers::E5_ocsvm_name_svd",
+      "model_name": "ocsvm",
+      "representation": "name_svd",
+      "validation_scenario": "unseen_customers",
+      "distribution": {
+        "mean": -43.27426622441175,
+        "std": 12.342761785187529,
+        "min": -64.7543142186859,
+        "max": -18.00034225951027,
+        "p50": -42.47729983418006,
+        "p90": -26.55022979286319,
+        "p99": -21.387710824281925,
+        "is_degenerate": false
+      },
+      "stability_spearman": 0.9998576254910875,
+      "history_consistency": {
+        "n_repeat_customers_evaluated": 101,
+        "median_within_customer_std": 3.017490805544686,
+        "overall_score_std": 12.342761785187529
+      },
+      "fit_seconds": 0.042,
+      "score_seconds": 0.013
+    },
+    {
+      "experiment_id": "repeat_customers_time_forward::E1_isolation_forest_tabular",
+      "model_name": "isolation_forest",
+      "representation": "tabular",
+      "validation_scenario": "repeat_customers_time_forward",
+      "distribution": {
+        "mean": 0.3770071119459304,
+        "std": 0.024667150537766528,
+        "min": 0.33982605400481547,
+        "max": 0.45080363324831646,
+        "p50": 0.36611514447991234,
+        "p90": 0.42317047209787256,
+        "p99": 0.4304458087662761,
+        "is_degenerate": false
+      },
+      "stability_spearman": 0.9340999155714954,
+      "history_consistency": {
+        "n_repeat_customers_evaluated": 90,
+        "median_within_customer_std": 0.004219307529593373,
+        "overall_score_std": 0.024667150537766528
+      },
+      "fit_seconds": 0.455,
+      "score_seconds": 0.008
+    },
+    {
+      "experiment_id": "repeat_customers_time_forward::E2_isolation_forest_name_svd",
+      "model_name": "isolation_forest",
+      "representation": "name_svd",
+      "validation_scenario": "repeat_customers_time_forward",
+      "distribution": {
+        "mean": 0.38188829337318286,
+        "std": 0.030033831129663523,
+        "min": 0.33807134941824496,
+        "max": 0.4866511057008819,
+        "p50": 0.3726779170066035,
+        "p90": 0.4249307720095298,
+        "p99": 0.4766878488875382,
+        "is_degenerate": false
+      },
+      "stability_spearman": 0.9697369717749095,
+      "history_consistency": {
+        "n_repeat_customers_evaluated": 90,
+        "median_within_customer_std": 0.004862673866034371,
+        "overall_score_std": 0.030033831129663523
+      },
+      "fit_seconds": 0.463,
+      "score_seconds": 0.007
+    },
+    {
+      "experiment_id": "repeat_customers_time_forward::E3_autoencoder_name_svd",
+      "model_name": "autoencoder",
+      "representation": "name_svd",
+      "validation_scenario": "repeat_customers_time_forward",
+      "distribution": {
+        "mean": 0.6006703972816467,
+        "std": 0.4638310372829437,
+        "min": 0.07855360954999924,
+        "max": 2.5518529415130615,
+        "p50": 0.4611811339855194,
+        "p90": 1.1922500133514404,
+        "p99": 2.5518529415130615,
+        "is_degenerate": false
+      },
+      "stability_spearman": 0.9986727551011091,
+      "history_consistency": {
+        "n_repeat_customers_evaluated": 90,
+        "median_within_customer_std": 0.056875962764024734,
+        "overall_score_std": 0.4638310372829437
+      },
+      "fit_seconds": 0.122,
+      "score_seconds": 0.001
+    },
+    {
+      "experiment_id": "repeat_customers_time_forward::E4_lof_name_svd",
+      "model_name": "lof",
+      "representation": "name_svd",
+      "validation_scenario": "repeat_customers_time_forward",
+      "distribution": {
+        "mean": 3431702.081965997,
+        "std": 113764896.20261589,
+        "min": 0.9566863366490695,
+        "max": 3774870991.9530325,
+        "p50": 1.0900549593887,
+        "p90": 1.469907645647867,
+        "p99": 1.9093420916085906,
+        "is_degenerate": false
+      },
+      "stability_spearman": 0.9080671520641095,
+      "history_consistency": {
+        "n_repeat_customers_evaluated": 90,
+        "median_within_customer_std": 0.03318733410356435,
+        "overall_score_std": 113764896.20261589
+      },
+      "fit_seconds": 0.048,
+      "score_seconds": 0.011
+    },
+    {
+      "experiment_id": "repeat_customers_time_forward::E5_ocsvm_name_svd",
+      "model_name": "ocsvm",
+      "representation": "name_svd",
+      "validation_scenario": "repeat_customers_time_forward",
+      "distribution": {
+        "mean": -41.53908146569341,
+        "std": 10.460207492933066,
+        "min": -58.35100956875996,
+        "max": -16.654548126963554,
+        "p50": -42.17286752825598,
+        "p90": -24.744849129500935,
+        "p99": -20.382972397141387,
+        "is_degenerate": false
+      },
+      "stability_spearman": 0.9992370283108756,
+      "history_consistency": {
+        "n_repeat_customers_evaluated": 90,
+        "median_within_customer_std": 1.5213425910359146,
+        "overall_score_std": 10.460207492933066
+      },
+      "fit_seconds": 0.041,
+      "score_seconds": 0.013
+    }
+  ],
+  "champion": {
+    "experiment_id": "unseen_customers::E5_ocsvm_name_svd",
+    "model_kind": "ocsvm",
+    "representation": "name_svd",
+    "validation_scenario": "unseen_customers"
+  },
+  "selection_rubric": {
+    "dropped_degenerate_experiment_ids": [],
+    "ranked_experiment_ids_best_to_worst": [
+      "unseen_customers::E5_ocsvm_name_svd",
+      "repeat_customers_time_forward::E5_ocsvm_name_svd",
+      "unseen_customers::E3_autoencoder_name_svd",
+      "repeat_customers_time_forward::E3_autoencoder_name_svd",
+      "unseen_customers::E2_isolation_forest_name_svd",
+      "repeat_customers_time_forward::E2_isolation_forest_name_svd",
+      "unseen_customers::E1_isolation_forest_tabular",
+      "repeat_customers_time_forward::E1_isolation_forest_tabular",
+      "unseen_customers::E4_lof_name_svd",
+      "repeat_customers_time_forward::E4_lof_name_svd"
+    ],
+    "champion_experiment_id": "unseen_customers::E5_ocsvm_name_svd",
+    "champion_stability_spearman": 0.9998576254910875,
+    "champion_consistency_ratio": 0.24447452345438264,
+    "selection_criteria_order": [
+      "not degenerate",
+      "highest bootstrap ranking stability (Spearman)",
+      "lowest within-customer/overall score-std ratio",
+      "lowest fit+score time"
+    ]
+  },
+  "checks": {
+    "isolation_forest_not_assumed_winner": true,
+    "autoencoder_benchmarked": true,
+    "lof_and_ocsvm_benchmarked": true,
+    "both_validation_scenarios_reported_separately": true,
+    "no_classification_accuracy_reported": true,
+    "status_used_only_in_labeled_exploratory_cell": true,
+    "no_pii_in_this_report_or_notebook_output": true
+  },
+  "known_limitations": [
+    "Small sample (4,397 combined rows) -- champion selection evidence is directional, not a large-sample statistical guarantee.",
+    "customer_id is sheet-namespaced (Phase 2 decision) -- a real customer appearing in both CustomerViolation and TransactionNameViolation is treated as two separate histories until the client confirms the UIN spaces are the same.",
+    "Character/token representation (E2-E5) uses a 50-component SVD reduction of the TF-IDF space for tractability -- champion evidence is about this reduced representation, not the full TF-IDF space directly."
+  ],
+  "next_gate": "Phase 6 -- Transaction/Rule model experiments (Isolation Forest + Autoencoder benchmarks on the Phase 4 transaction representation). Requires human approval."
+}
