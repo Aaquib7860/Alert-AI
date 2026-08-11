@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Alert Intelligence Engine -- PoC Demo</title>
+<link rel="stylesheet" href="/static/demo.css">
+</head>
+<body>
+  <header>
+    <h1>Alert Intelligence Engine <span class="badge-poc">PoC Demo</span></h1>
+    <p class="subtitle">Unsupervised / self-supervised anomaly scoring for AML alert triage &mdash; no LLM, no paid AI API.</p>
+  </header>
+
+  <section class="claims-banner">
+    <h2>What this demo does <u>not</u> claim</h2>
+    <ul>
+      <li>Does <strong>not</strong> claim the current sample proves true-match detection.</li>
+      <li>Does <strong>not</strong> claim the anomaly score is a probability of guilt or false positive.</li>
+      <li>Does <strong>not</strong> claim autonomous release is production-safe from this workbook alone.</li>
+      <li>Does <strong>not</strong> hide the lack of confirmed labels &mdash; it is an explicit design condition (see Data Overview below).</li>
+    </ul>
+  </section>
+
+  <section id="overview-section">
+    <h2>1. Data Overview</h2>
+    <div id="overview-content" class="loading">Loading&hellip;</div>
+  </section>
+
+  <section id="score-section">
+    <h2>2. Score an Alert</h2>
+    <div class="controls">
+      <label>Alert type
+        <select id="alert-type-select">
+          <option value="customer_name">Customer Name Alert</option>
+          <option value="transaction_name">Transaction Name Alert</option>
+          <option value="transaction_rule">Transaction Rule Alert</option>
+        </select>
+      </label>
+      <button id="load-sample-btn">Load unseen historical alert</button>
+      <button id="score-btn" disabled>Score this alert</button>
+    </div>
+
+    <div id="raw-fields-panel" class="panel hidden">
+      <h3>Raw alert fields (sent to the scoring API)</h3>
+      <table id="raw-fields-table"></table>
+    </div>
+
+    <div id="score-result-panel" class="panel hidden">
+      <h3>Model score</h3>
+      <div id="score-result-content"></div>
+    </div>
+
+    <div id="historical-outcome-panel" class="panel hidden not-model-input">
+      <h3>Historical operational outcome <span class="tag">EVALUATION CONTEXT ONLY -- NOT MODEL INPUT</span></h3>
+      <div id="historical-outcome-content"></div>
+    </div>
+  </section>
+
+  <section id="queue-section">
+    <h2>3. Simulated Review Queue (batch scoring)</h2>
+    <div class="controls">
+      <label>Alert type
+        <select id="queue-alert-type-select">
+          <option value="customer_name">Customer Name Alert</option>
+          <option value="transaction_name">Transaction Name Alert</option>
+          <option value="transaction_rule">Transaction Rule Alert</option>
+        </select>
+      </label>
+      <label>Count
+        <input type="number" id="queue-n-input" value="10" min="1" max="50">
+      </label>
+      <button id="build-queue-btn">Build review queue</button>
+    </div>
+    <div id="queue-panel" class="panel hidden">
+      <table id="queue-table">
+        <thead><tr><th>Rank</th><th>Alert ID</th><th>Global novelty</th><th>Recommendation</th><th>Reason codes</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="feedback-section">
+    <h2>4. Record Compliance Feedback</h2>
+    <p class="hint">Simulates storing a future compliance decision against a scored alert &mdash; not a validated supervised label until independently confirmed (see master plan section 17).</p>
+    <div class="controls">
+      <label>Alert ID <input type="text" id="feedback-alert-id"></label>
+      <label>Alert type
+        <select id="feedback-alert-type">
+          <option value="customer_name">customer_name</option>
+          <option value="transaction_name">transaction_name</option>
+          <option value="transaction_rule">transaction_rule</option>
+        </select>
+      </label>
+      <label>Outcome
+        <select id="feedback-outcome">
+          <option value="UNKNOWN">UNKNOWN</option>
+          <option value="HISTORICALLY_RELEASED">HISTORICALLY_RELEASED</option>
+          <option value="CONFIRMED_FALSE_POSITIVE">CONFIRMED_FALSE_POSITIVE</option>
+          <option value="CONFIRMED_TRUE_MATCH">CONFIRMED_TRUE_MATCH</option>
+          <option value="ESCALATED">ESCALATED</option>
+          <option value="FOLLOW_UP">FOLLOW_UP</option>
+        </select>
+      </label>
+    </div>
+    <textarea id="feedback-notes" placeholder="Notes (optional)"></textarea>
+    <button id="submit-feedback-btn">Submit feedback</button>
+    <div id="feedback-result"></div>
+  </section>
+
+  <footer>
+    <p>Model scores are novelty percentiles against a training population &mdash; never a probability. Recommendation thresholds are PoC placeholders, not yet calibrated or approved. See <code>evaluation/phase9_demo_report.json</code> for full disclosure.</p>
+  </footer>
+
+  <script src="/static/demo.js"></script>
+</body>
+</html>

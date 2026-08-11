@@ -1,0 +1,129 @@
+{
+  "phase": "9_demo_ui",
+  "status": "PASS",
+  "demo_url": "/demo (served by the same FastAPI app as the production API, e.g. http://127.0.0.1:8000/demo)",
+  "demo_checklist": [
+    {
+      "item": "Load the client sample data.",
+      "status": "PASS",
+      "evidence": "GET /api/v1/demo/data-overview loads live from Phase 1/2 pipeline"
+    },
+    {
+      "item": "Show the three alert types.",
+      "status": "PASS",
+      "evidence": "Alert-type selector covers customer_name/transaction_name/transaction_rule"
+    },
+    {
+      "item": "Show automated data validation and normalization.",
+      "status": "PASS",
+      "evidence": "Data Overview section 1 (schema check, row/col counts) sourced from Phase 1/2 reports"
+    },
+    {
+      "item": "Show duplicate and missingness findings.",
+      "status": "PASS",
+      "evidence": "Data Overview table: exact + near-duplicate counts per sheet"
+    },
+    {
+      "item": "Train or load the approved PoC model.",
+      "status": "PASS",
+      "evidence": "Champion models loaded via app/services/model_registry.py (Phase 5/6 champions)"
+    },
+    {
+      "item": "Select an unseen historical alert.",
+      "status": "PASS",
+      "evidence": "GET /api/v1/demo/sample-alert draws from the proven test split (verified zero customer overlap with training, see tests/test_demo_data.py)"
+    },
+    {
+      "item": "Send it through the same API path intended for production.",
+      "status": "PASS",
+      "evidence": "UI calls POST /api/v1/alerts/score directly -- the real production endpoint, not a demo-only shortcut"
+    },
+    {
+      "item": "Show model version and feature version.",
+      "status": "PASS",
+      "evidence": "Displayed in score result panel: model_version, feature_version, schema_version"
+    },
+    {
+      "item": "Show global novelty.",
+      "status": "PASS",
+      "evidence": "novelty.global percentile shown as a bar + numeric value"
+    },
+    {
+      "item": "Show customer-specific novelty where history exists.",
+      "status": "PASS",
+      "evidence": "novelty.customer z-score shown when a baseline exists, else explicit 'no baseline' message"
+    },
+    {
+      "item": "Show relevant historical context.",
+      "status": "PASS",
+      "evidence": "historical_context.customer_prior_alert_count + baseline-known flag"
+    },
+    {
+      "item": "Show model-derived reason codes based on measurable feature/representation deviations.",
+      "status": "PASS",
+      "evidence": "reason_codes chips, derived from actual missingness/screening-% feature values (app/services/scoring.py:_reason_codes)"
+    },
+    {
+      "item": "Show recommendation: lower-touch candidate or compliance review.",
+      "status": "PASS",
+      "evidence": "Color-coded recommendation badge + explicit PoC-threshold disclaimer"
+    },
+    {
+      "item": "Show the historical operational outcome separately, clearly marked as evaluation context rather than model input.",
+      "status": "PASS",
+      "evidence": "Dedicated 'NOT MODEL INPUT' panel, visually distinct styling, never sent to the scoring endpoint"
+    },
+    {
+      "item": "Repeat for a Transaction Rule alert.",
+      "status": "PASS",
+      "evidence": "Same alert-type selector covers transaction_rule end to end"
+    },
+    {
+      "item": "Show batch scoring and a simulated review-queue ranking.",
+      "status": "PASS",
+      "evidence": "Section 3: GET /api/v1/demo/review-queue, ranked descending by global novelty"
+    },
+    {
+      "item": "Show how a future compliance decision is stored as feedback.",
+      "status": "PASS",
+      "evidence": "Section 4: POST /api/v1/feedback, writes to feedback/feedback_log.jsonl, ack shown in UI"
+    }
+  ],
+  "not_claim_checklist": [
+    {
+      "item": "Do not claim that the current sample proves true-match detection.",
+      "status": "PASS",
+      "evidence": "Claims banner, always visible at top of the demo page"
+    },
+    {
+      "item": "Do not claim that anomaly score equals probability of guilt or false positive.",
+      "status": "PASS",
+      "evidence": "novelty_scale_note on every score response + claims banner"
+    },
+    {
+      "item": "Do not claim autonomous release is production-safe from this workbook alone.",
+      "status": "PASS",
+      "evidence": "Claims banner + recommendation_threshold_note explicitly labels the threshold as an uncalibrated PoC placeholder"
+    },
+    {
+      "item": "Do not hide the lack of confirmed labels; present it as an explicit design condition.",
+      "status": "PASS",
+      "evidence": "Data Overview section states the label-audit finding directly (UPS/Released not trustworthy) before any score is shown"
+    }
+  ],
+  "architecture": {
+    "backend": "app/api/demo_routes.py (data-overview, sample-alert, review-queue) -- demo-only, NOT part of the master plan section 13 production API contract",
+    "frontend": "app/static/{demo.html,demo.css,demo.js} -- vanilla HTML/CSS/JS, no build tool, no external CDN dependency, served directly by FastAPI's StaticFiles",
+    "data_flow": "UI -> /api/v1/demo/sample-alert (demo-only, returns real PII) -> /api/v1/alerts/score (REAL production endpoint, same path a real integration would use)"
+  },
+  "critical_security_note": "app/api/demo_routes.py and app/services/demo_data.py return REAL customer PII (names, DOB, nationality) over HTTP by design -- that is what makes the demo useful. These routes MUST be removed or gated behind network/auth controls before any deployment outside a local/controlled demo environment. They are intentionally kept in separate modules from the production scoring API (app/services/scoring.py, app/api/routes.py) specifically so this removal is a clean, obvious cut, not a refactor. This module's own docstring states the same warning.",
+  "verified": {
+    "live_server_smoke_test": "uvicorn app.main:app -- /demo, /static/demo.{css,js}, /api/v1/demo/data-overview all returned 200",
+    "sample_alert_is_from_proven_unseen_test_split": true,
+    "sample_alert_scoreable_through_real_production_endpoint": true,
+    "review_queue_sorted_descending_and_deterministic_for_fixed_seed": true,
+    "no_pii_in_any_committed_file": "demo.html/css/js contain no data, only UI code; app/services/demo_data.py and app/api/demo_routes.py contain no hardcoded examples, only logic that reads gitignored local data at request time"
+  },
+  "tests": "16 new tests (tests/test_demo_data.py, tests/test_demo_routes.py), 180/180 total passing",
+  "next_gate": "Phase 10 -- Feedback, monitoring, and model registry foundations (drift monitors, retraining triggers, feedback validation pipeline). Requires human approval."
+}
