@@ -38,6 +38,10 @@ FEATURE_VERSION = "entity-v1"
 NAME_COLUMNS: dict[str, list[str]] = {
     "CustomerViolation": ["Alerted Party Name (Normalized)", "Hit Details (Name) (Normalized)"],
     "TransactionNameViolation": ["Alerted Party Name (Normalized)", "Hit Details (Name) (Normalized)"],
+    # Phase 5 shared representation (pipelines/entity/combined_dataset.py)
+    # -- identical to the per-sheet lists above, since that's exactly what
+    # makes combining the two sheets legitimate in the first place.
+    "CombinedEntity": ["Alerted Party Name (Normalized)", "Hit Details (Name) (Normalized)"],
 }
 
 # Context categorical columns -- all low-cardinality (2-41 distinct values,
@@ -51,6 +55,13 @@ CONTEXT_CATEGORICAL_COLUMNS: dict[str, list[str]] = {
         "Customer Type", "Alerted Party", "Alert Type",
         "Sanctions Screening List Name", "Branch Name",
     ],
+    "CombinedEntity": [
+        "Customer Type", "Alerted Party", "Alert Type",
+        "Sanctions Screening List Name", "Branch Name",
+        # retains alert-type context per master plan section 2: "A shared
+        # representation layer can be used while retaining alert-type context"
+        "alert_source_sheet",
+    ],
 }
 
 # Normalized nationality columns (Phase 2 output), used as their own
@@ -60,6 +71,7 @@ CONTEXT_CATEGORICAL_COLUMNS: dict[str, list[str]] = {
 NATIONALITY_COLUMNS: dict[str, list[str]] = {
     "CustomerViolation": ["Alerted Party Nationality", "Hit Details (Nationality)"],
     "TransactionNameViolation": ["Alerted Party Nationality", "Hit Details (Nationality)"],
+    "CombinedEntity": ["Alerted Party Nationality", "Hit Details (Nationality)"],
 }
 
 # Plain numeric features already present after Phase 2 (Matched Screening %
@@ -68,6 +80,7 @@ NATIONALITY_COLUMNS: dict[str, list[str]] = {
 NUMERIC_COLUMNS: dict[str, list[str]] = {
     "CustomerViolation": ["Matched Screening % (Parsed)"],
     "TransactionNameViolation": ["Matched Screening % (Parsed)"],
+    "CombinedEntity": ["Matched Screening % (Parsed)"],
 }
 
 DOB_YEAR_MAX_PLAUSIBLE_AGE = 120

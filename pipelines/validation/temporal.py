@@ -26,6 +26,11 @@ SCORING_TIME_COLUMN: dict[str, str] = {
     "CustomerViolation": "Alert Generated Date & Time",
     "TransactionNameViolation": "Alert Generated Date & Time",
     "Rule": "Scan Date",
+    # Phase 5: the combined CustomerViolation + TransactionNameViolation
+    # entity dataset (pipelines/entity/combined_dataset.py) -- both source
+    # sheets already use this exact column name for scoring time, so the
+    # combination doesn't need a new concept, just an explicit entry here.
+    "CombinedEntity": "Alert Generated Date & Time",
 }
 
 # Columns whose values only exist strictly after scoring time -- i.e. the
