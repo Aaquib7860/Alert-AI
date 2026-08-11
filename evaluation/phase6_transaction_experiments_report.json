@@ -1,0 +1,366 @@
+{
+  "phase": "6_transaction_experiments",
+  "status": "PASS",
+  "experiments_run": [
+    {
+      "experiment_id": "unseen_customers::T1_isolation_forest_structured",
+      "model_name": "isolation_forest",
+      "representation": "structured",
+      "validation_scenario": "unseen_customers",
+      "distribution": {
+        "mean": 0.3515178277031851,
+        "std": 0.013602399078887476,
+        "min": 0.32214203018063226,
+        "max": 0.3935223404082895,
+        "p50": 0.3502440714737491,
+        "p90": 0.3731670447913858,
+        "p99": 0.38751244541708063,
+        "is_degenerate": false
+      },
+      "stability_spearman": 0.8831259997468267,
+      "history_consistency": {
+        "n_repeat_customers_evaluated": 48,
+        "median_within_customer_std": 0.003005882946940641,
+        "overall_score_std": 0.013602399078887476
+      },
+      "fit_seconds": 0.308,
+      "score_seconds": 0.005
+    },
+    {
+      "experiment_id": "unseen_customers::T2_isolation_forest_behavioural_svd",
+      "model_name": "isolation_forest",
+      "representation": "behavioural_svd",
+      "validation_scenario": "unseen_customers",
+      "distribution": {
+        "mean": 0.4133932174316639,
+        "std": 0.03578939745903986,
+        "min": 0.34736748833970726,
+        "max": 0.5201602310828617,
+        "p50": 0.4144436565229265,
+        "p90": 0.4640513620820372,
+        "p99": 0.48633406486846026,
+        "is_degenerate": false
+      },
+      "stability_spearman": 0.9764125310780953,
+      "history_consistency": {
+        "n_repeat_customers_evaluated": 48,
+        "median_within_customer_std": 0.012780348007274352,
+        "overall_score_std": 0.03578939745903986
+      },
+      "fit_seconds": 0.35,
+      "score_seconds": 0.007
+    },
+    {
+      "experiment_id": "unseen_customers::T3_autoencoder_behavioural_svd",
+      "model_name": "autoencoder",
+      "representation": "behavioural_svd",
+      "validation_scenario": "unseen_customers",
+      "distribution": {
+        "mean": 0.8578560948371887,
+        "std": 0.46907100081443787,
+        "min": 0.10909812152385712,
+        "max": 2.9836957454681396,
+        "p50": 0.7948296070098877,
+        "p90": 1.460136353969574,
+        "p99": 2.062136471271508,
+        "is_degenerate": false
+      },
+      "stability_spearman": 0.9966858676853281,
+      "history_consistency": {
+        "n_repeat_customers_evaluated": 48,
+        "median_within_customer_std": 0.1372695118188858,
+        "overall_score_std": 0.46907100081443787
+      },
+      "fit_seconds": 4.837,
+      "score_seconds": 0.0
+    },
+    {
+      "experiment_id": "unseen_customers::T4_lof_behavioural_svd",
+      "model_name": "lof",
+      "representation": "behavioural_svd",
+      "validation_scenario": "unseen_customers",
+      "distribution": {
+        "mean": 1.260453176750457,
+        "std": 0.9132616391431493,
+        "min": 0.9624040164341323,
+        "max": 8.32876929777955,
+        "p50": 1.0499991682746752,
+        "p90": 1.3194731300513367,
+        "p99": 7.137294485667403,
+        "is_degenerate": false
+      },
+      "stability_spearman": 0.8826193783365118,
+      "history_consistency": {
+        "n_repeat_customers_evaluated": 48,
+        "median_within_customer_std": 0.058025695418718395,
+        "overall_score_std": 0.9132616391431493
+      },
+      "fit_seconds": 0.156,
+      "score_seconds": 0.004
+    },
+    {
+      "experiment_id": "unseen_customers::T5_ocsvm_behavioural_svd",
+      "model_name": "ocsvm",
+      "representation": "behavioural_svd",
+      "validation_scenario": "unseen_customers",
+      "distribution": {
+        "mean": -47.906732807294105,
+        "std": 1.8646951193693413,
+        "min": -50.80367941114617,
+        "max": -35.99519426129325,
+        "p50": -47.92706092353748,
+        "p90": -47.28386305388332,
+        "p99": -39.21455978537086,
+        "is_degenerate": false
+      },
+      "stability_spearman": 0.9981192307171267,
+      "history_consistency": {
+        "n_repeat_customers_evaluated": 48,
+        "median_within_customer_std": 0.9313215464012536,
+        "overall_score_std": 1.8646951193693413
+      },
+      "fit_seconds": 0.015,
+      "score_seconds": 0.004
+    },
+    {
+      "experiment_id": "repeat_customers_time_forward::T1_isolation_forest_structured",
+      "model_name": "isolation_forest",
+      "representation": "structured",
+      "validation_scenario": "repeat_customers_time_forward",
+      "distribution": {
+        "mean": 0.34966327789299856,
+        "std": 0.01567130980789996,
+        "min": 0.3170306844461654,
+        "max": 0.3959439460384508,
+        "p50": 0.3473111931516044,
+        "p90": 0.3722150078064946,
+        "p99": 0.3869819346760063,
+        "is_degenerate": false
+      },
+      "stability_spearman": 0.9264219168636797,
+      "history_consistency": {
+        "n_repeat_customers_evaluated": 41,
+        "median_within_customer_std": 0.0021996842790975193,
+        "overall_score_std": 0.01567130980789996
+      },
+      "fit_seconds": 0.358,
+      "score_seconds": 0.005
+    },
+    {
+      "experiment_id": "repeat_customers_time_forward::T2_isolation_forest_behavioural_svd",
+      "model_name": "isolation_forest",
+      "representation": "behavioural_svd",
+      "validation_scenario": "repeat_customers_time_forward",
+      "distribution": {
+        "mean": 0.415087878120824,
+        "std": 0.03640334335719242,
+        "min": 0.34565257088044044,
+        "max": 0.5022311886566452,
+        "p50": 0.4159920474181544,
+        "p90": 0.4610483295831633,
+        "p99": 0.4922502011620456,
+        "is_degenerate": false
+      },
+      "stability_spearman": 0.9762502871606237,
+      "history_consistency": {
+        "n_repeat_customers_evaluated": 41,
+        "median_within_customer_std": 0.012984481881587958,
+        "overall_score_std": 0.03640334335719242
+      },
+      "fit_seconds": 0.349,
+      "score_seconds": 0.007
+    },
+    {
+      "experiment_id": "repeat_customers_time_forward::T3_autoencoder_behavioural_svd",
+      "model_name": "autoencoder",
+      "representation": "behavioural_svd",
+      "validation_scenario": "repeat_customers_time_forward",
+      "distribution": {
+        "mean": 0.8197622299194336,
+        "std": 0.4396771192550659,
+        "min": 0.10419563949108124,
+        "max": 2.750659704208374,
+        "p50": 0.7838079929351807,
+        "p90": 1.4444726705551147,
+        "p99": 1.858344101905822,
+        "is_degenerate": false
+      },
+      "stability_spearman": 0.995494330871568,
+      "history_consistency": {
+        "n_repeat_customers_evaluated": 41,
+        "median_within_customer_std": 0.09661088138818741,
+        "overall_score_std": 0.4396771192550659
+      },
+      "fit_seconds": 0.184,
+      "score_seconds": 0.001
+    },
+    {
+      "experiment_id": "repeat_customers_time_forward::T4_lof_behavioural_svd",
+      "model_name": "lof",
+      "representation": "behavioural_svd",
+      "validation_scenario": "repeat_customers_time_forward",
+      "distribution": {
+        "mean": 1.500192087639282,
+        "std": 1.60714225061632,
+        "min": 0.9389732650357452,
+        "max": 11.900979472071981,
+        "p50": 1.0380860132959515,
+        "p90": 1.5190345540134633,
+        "p99": 9.180583406350525,
+        "is_degenerate": false
+      },
+      "stability_spearman": 0.9185332828065773,
+      "history_consistency": {
+        "n_repeat_customers_evaluated": 41,
+        "median_within_customer_std": 0.03705654233660166,
+        "overall_score_std": 1.60714225061632
+      },
+      "fit_seconds": 0.017,
+      "score_seconds": 0.004
+    },
+    {
+      "experiment_id": "repeat_customers_time_forward::T5_ocsvm_behavioural_svd",
+      "model_name": "ocsvm",
+      "representation": "behavioural_svd",
+      "validation_scenario": "repeat_customers_time_forward",
+      "distribution": {
+        "mean": -47.93313190175505,
+        "std": 0.8165746381082845,
+        "min": -50.92261412303953,
+        "max": -45.70033382720367,
+        "p50": -47.77403730041436,
+        "p90": -47.06299111614693,
+        "p99": -46.31606996108417,
+        "is_degenerate": false
+      },
+      "stability_spearman": 0.9974264970753796,
+      "history_consistency": {
+        "n_repeat_customers_evaluated": 41,
+        "median_within_customer_std": 0.688028542284349,
+        "overall_score_std": 0.8165746381082845
+      },
+      "fit_seconds": 0.016,
+      "score_seconds": 0.004
+    }
+  ],
+  "champion": {
+    "experiment_id": "unseen_customers::T5_ocsvm_behavioural_svd",
+    "model_kind": "ocsvm",
+    "representation": "behavioural_svd",
+    "validation_scenario": "unseen_customers"
+  },
+  "selection_rubric": {
+    "dropped_degenerate_experiment_ids": [],
+    "ranked_experiment_ids_best_to_worst": [
+      "unseen_customers::T5_ocsvm_behavioural_svd",
+      "repeat_customers_time_forward::T5_ocsvm_behavioural_svd",
+      "unseen_customers::T3_autoencoder_behavioural_svd",
+      "repeat_customers_time_forward::T3_autoencoder_behavioural_svd",
+      "unseen_customers::T2_isolation_forest_behavioural_svd",
+      "repeat_customers_time_forward::T2_isolation_forest_behavioural_svd",
+      "repeat_customers_time_forward::T1_isolation_forest_structured",
+      "repeat_customers_time_forward::T4_lof_behavioural_svd",
+      "unseen_customers::T1_isolation_forest_structured",
+      "unseen_customers::T4_lof_behavioural_svd"
+    ],
+    "champion_experiment_id": "unseen_customers::T5_ocsvm_behavioural_svd",
+    "champion_stability_spearman": 0.9981192307171267,
+    "champion_consistency_ratio": 0.49944976888030684,
+    "selection_criteria_order": [
+      "not degenerate",
+      "highest bootstrap ranking stability (Spearman)",
+      "lowest within-customer/overall score-std ratio",
+      "lowest fit+score time"
+    ]
+  },
+  "per_rule_novelty_summary": {
+    "56 - HIGH RISK COUNTRY - CUMULATIVE": {
+      "mean": -45.40540553533491,
+      "std": 4.191915863693185,
+      "count": 40
+    },
+    "91 - PEP CUSTOMER": {
+      "mean": -46.029364309909,
+      "std": 3.459813104269215,
+      "count": 32
+    },
+    "101 - MULTIPLE CURRENCIES": {
+      "mean": -47.50314052978993,
+      "std": 0.33219012215460003,
+      "count": 2
+    },
+    "20 - HIGH VALUE TRANSACTIONS - CUMULATIVE": {
+      "mean": -47.922383430449656,
+      "std": 0.5015078000156554,
+      "count": 6
+    },
+    "42 - REMITTANCE - NON RESIDENT": {
+      "mean": -47.94217243188309,
+      "std": 0.7052406541037463,
+      "count": 94
+    },
+    "107 - AMOUNT EXCEEDS 30%": {
+      "mean": -48.0915976860966,
+      "std": 0.7721443762862003,
+      "count": 87
+    },
+    "23 - NATIONALITY - COUNTRY COMBINATION (SEND TRANS": {
+      "mean": -48.14626050443391,
+      "std": 0.845771813898064,
+      "count": 170
+    },
+    "97 - SPLITTING OF TRANSACTIONS": {
+      "mean": -48.208872747774684,
+      "std": 0.516025001406548,
+      "count": 8
+    },
+    "84 - TRANSACTIONS BREACHED AMOUNT 55K WITH IN A 90 DAYS": {
+      "mean": -48.26314901480722,
+      "std": 0.8282334079228051,
+      "count": 16
+    },
+    "53 - RULE TRANSACTIONS BREACHED AMOUNT 55K": {
+      "mean": -48.39965874476167,
+      "std": 1.6125317602848765,
+      "count": 112
+    },
+    "96 - MULTIPLE BENEFICIARIES (ONE TO MANY) SEND": {
+      "mean": -48.74570617637495,
+      "std": 1.4653548157231295,
+      "count": 10
+    },
+    "127 - SEND TO HIGH RISK COUNTRY": {
+      "mean": -48.98737733521452,
+      "std": 0.8804660991179226,
+      "count": 2
+    },
+    "4 - HIGH VALUE TRANSACTIONS": {
+      "mean": -49.4560569798016,
+      "std": 1.0689303018845266,
+      "count": 16
+    },
+    "104 - NEW CLIENT HIGH VALUE TRANSACTION": {
+      "mean": -49.94692538992117,
+      "std": NaN,
+      "count": 1
+    }
+  },
+  "checks": {
+    "isolation_forest_not_assumed_winner": true,
+    "autoencoder_benchmarked": true,
+    "lof_and_ocsvm_benchmarked": true,
+    "both_validation_scenarios_reported_separately": true,
+    "no_18_independent_rule_models_trained": true,
+    "per_rule_novelty_evaluated_not_modeled_separately": true,
+    "no_classification_accuracy_reported": true,
+    "status_used_only_in_labeled_exploratory_cell": true,
+    "transaction_amount_excluded_no_structured_field": true,
+    "no_pii_in_this_report_or_notebook_output": true
+  },
+  "known_limitations": [
+    "No structured transaction amount -- champion cannot use amount-based behavioural signal (z-score vs. customer history, etc.) until the client supplies a structured field.",
+    "Several rules have small test-set sample sizes (<5 alerts); their per-rule novelty mean/std is directional only, not statistically reliable at this volume.",
+    "T2-T5 share one SVD-reduced representation of the full feature matrix -- champion evidence is about this reduced representation, not the raw feature space directly."
+  ],
+  "next_gate": "Phase 7 -- Historical replay and validation report consolidating Phase 5 + Phase 6 evidence. Requires human approval."
+}
