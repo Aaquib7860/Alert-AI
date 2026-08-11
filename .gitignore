@@ -25,6 +25,10 @@ models/registry/*
 !models/transaction/.gitkeep
 !models/registry/.gitkeep
 
+# Runtime feedback log (not source, may reference caller-supplied alert_id)
+feedback/*
+!feedback/.gitkeep
+
 # Notebooks checkpoints
 .ipynb_checkpoints/
 
