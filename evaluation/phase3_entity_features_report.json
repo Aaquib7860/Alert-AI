@@ -1,0 +1,59 @@
+{
+  "phase": "3_entity_features",
+  "status": "PASS",
+  "sheets": {
+    "CustomerViolation": {
+      "rows": 2397,
+      "feature_dims": 8532,
+      "feature_blocks": [
+        "name_tfidf::Alerted Party Name (Normalized)",
+        "name_tfidf::Hit Details (Name) (Normalized)",
+        "categorical::Customer Type",
+        "categorical::Alerted Party",
+        "categorical::Alert Type",
+        "categorical::Sanctions Screening List Name",
+        "categorical::Branch Name",
+        "nationality::Alerted Party Nationality (Normalized)",
+        "nationality::Hit Details (Nationality) (Normalized)",
+        "numeric::Matched Screening % (Parsed),alerted_party_age_years,alerted_party_dob_missing,hit_age_years,hit_dob_resolved,hit_dob_multi_value,hit_dob_unresolved,customer_prior_alert_count"
+      ],
+      "feature_version": "entity-v1",
+      "name_vocabulary_sizes": {
+        "Alerted Party Name (Normalized)": 4296,
+        "Hit Details (Name) (Normalized)": 4073
+      }
+    },
+    "TransactionNameViolation": {
+      "rows": 2000,
+      "feature_dims": 5654,
+      "feature_blocks": [
+        "name_tfidf::Alerted Party Name (Normalized)",
+        "name_tfidf::Hit Details (Name) (Normalized)",
+        "categorical::Customer Type",
+        "categorical::Alerted Party",
+        "categorical::Alert Type",
+        "categorical::Sanctions Screening List Name",
+        "categorical::Branch Name",
+        "nationality::Alerted Party Nationality (Normalized)",
+        "nationality::Hit Details (Nationality) (Normalized)",
+        "numeric::Matched Screening % (Parsed),alerted_party_age_years,alerted_party_dob_missing,hit_age_years,hit_dob_resolved,hit_dob_multi_value,hit_dob_unresolved,customer_prior_alert_count"
+      ],
+      "feature_version": "entity-v1",
+      "name_vocabulary_sizes": {
+        "Alerted Party Name (Normalized)": 2623,
+        "Hit Details (Name) (Normalized)": 2889
+      }
+    }
+  },
+  "checks": {
+    "no_nan_or_inf_in_final_matrix": true,
+    "no_leakage_column_used_as_feature_source": true,
+    "unseen_category_handled_without_error": true,
+    "historical_context_never_counts_future_alerts": true,
+    "artifacts_persisted_for_reuse_at_inference": true
+  },
+  "known_limitations": [
+    "customer_prior_alert_count breaks ties among same-timestamp alerts for the same customer by original row order, not true causal order -- the source data has no finer-grained ordering signal for batch-generated same-second alerts."
+  ],
+  "next_gate": "Phase 4 -- Transaction/Rule features. Requires human approval before proceeding."
+}
