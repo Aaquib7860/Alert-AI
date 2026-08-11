@@ -1,0 +1,37 @@
+{
+  "phase": "4_transaction_features",
+  "status": "PASS",
+  "sheet": "Rule",
+  "rows": 2244,
+  "feature_dims": 6119,
+  "feature_blocks": [
+    "categorical::Transaction Type Code",
+    "categorical::Branch Description",
+    "categorical::Currency Name",
+    "categorical::Beneficiary Relationship",
+    "categorical::Purpose",
+    "categorical::Rule Name",
+    "nationality::Customer Nationality (Normalized)",
+    "name_tfidf::Beneficiary Name (Normalized)",
+    "numeric::Beneficiary Name_missing,Beneficiary Id Number_missing,Beneficiary Relationship_missing,Currency Name_missing,Purpose_missing,customer_prior_alert_count,customer_prior_distinct_rule_count"
+  ],
+  "feature_version": "transaction-v1",
+  "checks": {
+    "no_nan_or_inf_in_final_matrix": true,
+    "no_leakage_column_used_as_feature_source": true,
+    "comment_field_never_read_by_this_module": true,
+    "unseen_rule_category_handled_without_error": true,
+    "prior_alert_count_and_diversity_are_temporal_safe": true,
+    "artifacts_persisted_for_reuse_at_inference": true
+  },
+  "excluded_features": {
+    "transaction_amount": "no clean structured field in current sample; amount only appears in the leakage-typed Comment field, which this module never reads. Requires client-supplied structured field.",
+    "customer_currency": "constant in current sample, zero signal.",
+    "purpose_code": "redundant with Purpose (same cardinality/coverage)."
+  },
+  "known_limitations": [
+    "No structured transaction amount available in the current sample -- requires client-supplied structured field before this pipeline can include amount-based behavioural features (e.g. amount z-score, amount vs. customer historical average).",
+    "customer_prior_alert_count / customer_prior_distinct_rule_count share the same same-timestamp tie-breaking caveat documented in Phase 3 (entity_features.build_historical_customer_context docstring)."
+  ],
+  "next_gate": "Phase 5 -- Entity model experiments (Isolation Forest / Autoencoder benchmarks). Requires human approval before proceeding."
+}
