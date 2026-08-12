@@ -65,6 +65,11 @@ class AlertScoreResponse(BaseModel):
     plain_language_detail: str
     reason_codes: list[str]
     reason_codes_plain: list[str] = Field(description="Plain-English translation of reason_codes, UI display only.")
+    evidence: dict[str, Any] = Field(
+        description="The underlying field values behind the score/reason codes (e.g. screening "
+        "match %, nationality, rule name) -- for human review, so a reviewer can look at the "
+        "same data the model saw and judge it themselves. Never feeds back into the score."
+    )
     historical_context: HistoricalContext
     scored_at: datetime
 

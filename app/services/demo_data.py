@@ -162,10 +162,27 @@ def sample_alert(alert_type: str, seed: int | None = None) -> dict:
     }
 
 
+# Identity fields shown in the demo review-queue table (NOT part of the
+# production /alerts/score API contract -- that stays PII-free by design,
+# see app/services/scoring.py). Requested explicitly for local review use:
+# a compliance reviewer scanning the queue needs to see who the alert is
+# actually about, same as they'd already see in the single-alert panel's
+# raw-fields table. Real PII, real names -- same warning as the rest of
+# this module: local demo use only, never expose this route outside a
+# controlled environment.
+IDENTITY_FIELDS = {
+    "CustomerViolation": {"name": "Alerted Party Name", "dob": "Alerted Party DOB", "id": "UIN", "country": "Alerted Party Nationality"},
+    "TransactionNameViolation": {"name": "Alerted Party Name", "dob": "Alerted Party DOB", "id": "UIN", "country": "Alerted Party Nationality"},
+    "Rule": {"name": "Customer Name", "dob": None, "id": "Customer Number", "country": "Customer Nationality"},
+}
+
+
 def build_review_queue(alert_type: str, n: int = 10, seed: int | None = 42) -> list[dict]:
     """Scores `n` real test-split alerts and returns them ranked by global
     novelty percentile, descending -- master plan section 12: "Show batch
-    scoring and a simulated review-queue ranking."
+    scoring and a simulated review-queue ranking." Each result also carries
+    an `identity` block (name/DOB/ID/country) for display -- see
+    IDENTITY_FIELDS docstring above for the PII scope note.
     """
     from app.services.scoring import score_alert
 
@@ -199,6 +216,14 @@ def build_review_queue(alert_type: str, n: int = 10, seed: int | None = 42) -> l
         record_id = normalized_df.iloc[pos]["record_id"]
         alert_id = f"demo-{record_id}"
         scored = score_alert(alert_type, alert_id, raw_fields)
+
+        id_map = IDENTITY_FIELDS[sheet_name]
+        scored["identity"] = {
+            "name": raw_fields.get(id_map["name"]),
+            "dob": raw_fields.get(id_map["dob"]) if id_map["dob"] else None,
+            "id": raw_fields.get(id_map["id"]),
+            "country": raw_fields.get(id_map["country"]),
+        }
         results.append(scored)
 
     results.sort(key=lambda r: r["novelty"]["global"], reverse=True)

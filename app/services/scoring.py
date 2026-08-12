@@ -168,6 +168,43 @@ def _reason_codes(sheet_name: str, normalized_row: pd.Series) -> list[str]:
     return codes
 
 
+def _clean_value(v):
+    """None for any missing/NaN/NaT scalar, native Python type otherwise
+    (numpy scalars aren't JSON-serializable as-is)."""
+    if v is None:
+        return None
+    try:
+        if pd.isna(v):
+            return None
+    except (TypeError, ValueError):
+        pass  # v isn't a type pd.isna can evaluate (e.g. a list) -- not expected here, pass through
+    return v.item() if hasattr(v, "item") else v
+
+
+def _evidence_fields(sheet_name: str, normalized_row: pd.Series) -> dict:
+    """The specific underlying field values behind the reason codes and
+    score -- not just a flag, the actual data -- so a human reviewer can
+    look at the same record the model saw and judge it themselves. This is
+    supporting evidence for human judgment, not a second decision engine:
+    nothing here feeds back into the score or recommendation.
+    """
+    if sheet_name in ("CustomerViolation", "TransactionNameViolation"):
+        return {
+            "matched_screening_pct": _clean_value(normalized_row.get("Matched Screening % (Parsed)")),
+            "alerted_party_nationality": _clean_value(normalized_row.get("Alerted Party Nationality (Normalized)")),
+            "hit_nationality": _clean_value(normalized_row.get("Hit Details (Nationality) (Normalized)")),
+            "sanctions_screening_list": _clean_value(normalized_row.get("Sanctions Screening List Name (Normalized)")),
+            "alert_type": _clean_value(normalized_row.get("Alert Type (Normalized)")),
+        }
+    return {
+        "rule_name": _clean_value(normalized_row.get("Rule Name (Normalized)")),
+        "transaction_type": _clean_value(normalized_row.get("Transaction Type Code (Normalized)")),
+        "currency": _clean_value(normalized_row.get("Currency Name (Normalized)")),
+        "beneficiary_relationship": _clean_value(normalized_row.get("Beneficiary Relationship (Normalized)")),
+        "customer_nationality": _clean_value(normalized_row.get("Customer Nationality (Normalized)")),
+    }
+
+
 # Plain-English translation for each internal reason code -- for UI
 # display only, the internal code is still returned in `reason_codes`.
 REASON_CODE_PLAIN_TEXT: dict[str, str] = {
@@ -260,6 +297,7 @@ def score_alert(alert_type: str, alert_id: str, raw_fields: dict[str, Any]) -> d
 
     reason_codes = _reason_codes(sheet_name, normalized_row)
     reason_codes_plain = [REASON_CODE_PLAIN_TEXT.get(c, c) for c in reason_codes]
+    evidence = _evidence_fields(sheet_name, normalized_row)
 
     historical_context = {
         "customer_prior_alert_count": (
@@ -292,6 +330,7 @@ def score_alert(alert_type: str, alert_id: str, raw_fields: dict[str, Any]) -> d
         "plain_language_detail": plain_language["detail"],
         "reason_codes": reason_codes,
         "reason_codes_plain": reason_codes_plain,
+        "evidence": evidence,
         "historical_context": historical_context,
         "scored_at": datetime.now(timezone.utc).isoformat(),
     }

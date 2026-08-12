@@ -52,11 +52,47 @@ async function loadOverview() {
 }
 
 // ---------- 2. Score an alert ----------
-function renderRawFields(fields) {
+// Which raw field (and which `evidence` key) each reason code points back
+// to -- lets the UI highlight the exact value that drove the flag, in red,
+// instead of just naming the code. Must stay in sync with
+// app/services/scoring.py's _reason_codes()/_evidence_fields().
+const REASON_CODE_TO_RAW_FIELD = {
+  ALERTED_PARTY_DOB_MISSING: "Alerted Party DOB",
+  HIT_DOB_UNRESOLVED: "Hit Details (DOB)",
+  HIT_DOB_MULTI_VALUE: "Hit Details (DOB)",
+  HIT_NATIONALITY_MISSING: "Hit Details (Nationality)",
+  HIGH_SCREENING_MATCH_PERCENTAGE: "Matched Screening %",
+  BENEFICIARY_NAME_MISSING: "Beneficiary Name",
+  BENEFICIARY_RELATIONSHIP_MISSING: "Beneficiary Relationship",
+  CURRENCY_NAME_MISSING: "Currency Name",
+};
+
+const REASON_CODE_TO_EVIDENCE_KEY = {
+  HIT_NATIONALITY_MISSING: "hit_nationality",
+  HIGH_SCREENING_MATCH_PERCENTAGE: "matched_screening_pct",
+  BENEFICIARY_RELATIONSHIP_MISSING: "beneficiary_relationship",
+  CURRENCY_NAME_MISSING: "currency",
+};
+
+function flaggedRawFieldNames(reasonCodes) {
+  return new Set(reasonCodes.map(c => REASON_CODE_TO_RAW_FIELD[c]).filter(Boolean));
+}
+
+function flaggedEvidenceKeys(reasonCodes) {
+  return new Set(reasonCodes.map(c => REASON_CODE_TO_EVIDENCE_KEY[c]).filter(Boolean));
+}
+
+function renderRawFields(fields, reasonCodes = []) {
   const table = document.getElementById("raw-fields-table");
   table.innerHTML = "";
+  const flagged = flaggedRawFieldNames(reasonCodes);
   for (const [k, v] of Object.entries(fields)) {
-    table.appendChild(el("tr", {}, [el("td", { text: k }), el("td", { text: v === null ? "(missing)" : String(v) })]));
+    const isFlagged = flagged.has(k);
+    const valueCell = el("td", { text: v === null ? "(missing)" : String(v) });
+    if (isFlagged) valueCell.className = "flagged-value";
+    const row = el("tr", {}, [el("td", { text: k }), valueCell]);
+    if (isFlagged) row.className = "flagged-row";
+    table.appendChild(row);
   }
   document.getElementById("raw-fields-panel").classList.remove("hidden");
 }
@@ -87,6 +123,21 @@ function renderScoreResult(result) {
       : "Customer-specific novelty: no baseline (new/unseen customer)",
   }));
   container.appendChild(el("p", { class: "note", text: result.novelty_scale_note }));
+
+  container.appendChild(el("p", { text: "Record evidence -- the actual field values behind this score. Values in red are the specific ones that drove a reason code below:" }));
+  const evidenceKeys = Object.keys(result.evidence);
+  const flaggedKeys = flaggedEvidenceKeys(result.reason_codes);
+  if (evidenceKeys.length === 0) {
+    container.appendChild(el("p", { class: "note", text: "(no evidence fields available)" }));
+  } else {
+    const evidenceTable = el("table");
+    evidenceKeys.forEach(key => {
+      const valueCell = el("td", { text: String(formatEvidenceValue(key, result.evidence[key])) });
+      if (flaggedKeys.has(key)) valueCell.className = "flagged-value";
+      evidenceTable.appendChild(el("tr", {}, [el("th", { text: EVIDENCE_LABELS[key] || key }), valueCell]));
+    });
+    container.appendChild(evidenceTable);
+  }
 
   container.appendChild(el("p", { text: "What stood out:" }));
   if (result.reason_codes_plain.length === 0) {
@@ -143,6 +194,9 @@ document.getElementById("score-btn").addEventListener("click", async () => {
       }),
     });
     renderScoreResult(lastScore);
+    // re-render raw fields now that reason codes are known, so the exact
+    // value(s) that drove a flag show up in red right where they live
+    renderRawFields(lastSample.raw_fields, lastScore.reason_codes);
     document.getElementById("feedback-alert-id").value = lastScore.alert_id;
     document.getElementById("feedback-alert-type").value = lastScore.alert_type;
   } catch (e) {
@@ -151,6 +205,42 @@ document.getElementById("score-btn").addEventListener("click", async () => {
 });
 
 // ---------- 3. Review queue ----------
+// One real table column per evidence field -- not chips crammed into a
+// single cell -- so you can scan straight down a column (e.g. every row's
+// "Screening %") and compare across the whole queue. The evidence field
+// set differs by alert type (see app/services/scoring.py:_evidence_fields),
+// so columns are built dynamically from whatever the API actually returns
+// for the selected alert type, not hardcoded in the HTML.
+const EVIDENCE_LABELS = {
+  matched_screening_pct: "Screening %",
+  alerted_party_nationality: "Alerted Nationality",
+  hit_nationality: "Hit Nationality",
+  sanctions_screening_list: "Watchlist",
+  alert_type: "Alert Type",
+  rule_name: "Rule",
+  transaction_type: "Txn Type",
+  currency: "Currency",
+  beneficiary_relationship: "Beneficiary Rel.",
+  customer_nationality: "Customer Nationality",
+};
+
+function formatEvidenceValue(key, value) {
+  if (value === null || value === undefined) return "—"; // em dash for "not present"
+  return key === "matched_screening_pct" ? `${value}%` : value;
+}
+
+const IDENTITY_COLS = ["Name", "DOB", "ID", "Country"];
+
+function buildQueueHeader(evidenceKeys) {
+  const thead = document.getElementById("queue-thead");
+  thead.innerHTML = "";
+  const fixedCols = ["Rank", "Alert ID", ...IDENTITY_COLS, "Global Novelty", "Status"];
+  const evidenceCols = evidenceKeys.map(k => EVIDENCE_LABELS[k] || k);
+  const trailingCols = ["What Stood Out"];
+  const headerRow = el("tr", {}, [...fixedCols, ...evidenceCols, ...trailingCols].map(h => el("th", { text: h })));
+  thead.appendChild(headerRow);
+}
+
 document.getElementById("build-queue-btn").addEventListener("click", async () => {
   const alertType = document.getElementById("queue-alert-type-select").value;
   const n = document.getElementById("queue-n-input").value;
@@ -158,16 +248,32 @@ document.getElementById("build-queue-btn").addEventListener("click", async () =>
   tbody.innerHTML = "";
   try {
     const data = await getJSON(`${API}/demo/review-queue?alert_type=${alertType}&n=${n}`);
+    const evidenceKeys = data.queue.length > 0 ? Object.keys(data.queue[0].evidence) : [];
+    buildQueueHeader(evidenceKeys);
+
     data.queue.forEach((r, i) => {
       const labelClass = PLAIN_LABEL_CLASS[r.plain_language_label] || "rec-borderline";
-      tbody.appendChild(el("tr", {}, [
+      const identity = r.identity || {};
+      const row = el("tr", {}, [
         el("td", { text: i + 1 }),
         el("td", { text: r.alert_id }),
+        el("td", { text: identity.name ?? "—" }),
+        el("td", { text: identity.dob ?? "—" }),
+        el("td", { text: identity.id ?? "—" }),
+        el("td", { text: identity.country ?? "—" }),
         el("td", { text: r.novelty.global }),
         el("td", {}, [el("span", { class: labelClass, text: r.plain_language_label })]),
-        el("td", { text: r.reason_codes_plain.join("; ") || "-" }),
-      ]));
+      ]);
+      const rowFlaggedKeys = flaggedEvidenceKeys(r.reason_codes);
+      evidenceKeys.forEach(key => {
+        const cell = el("td", { text: String(formatEvidenceValue(key, r.evidence[key])) });
+        if (rowFlaggedKeys.has(key)) cell.className = "flagged-value";
+        row.appendChild(cell);
+      });
+      row.appendChild(el("td", { text: r.reason_codes_plain.join("; ") || "—" }));
+      tbody.appendChild(row);
     });
+    document.getElementById("queue-table").classList.add("dense");
     document.getElementById("queue-panel").classList.remove("hidden");
   } catch (e) {
     alert(`Could not build review queue: ${e.message}`);

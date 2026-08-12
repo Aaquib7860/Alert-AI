@@ -199,3 +199,36 @@ def test_score_alert_reproducible_for_same_input():
     r2 = score_alert("customer_name", "a", raw)
     assert r1["novelty"]["global"] == r2["novelty"]["global"]
     assert r1["novelty"]["customer"] == r2["novelty"]["customer"]
+
+
+@pytest.mark.skipif(not REGISTRY_AVAILABLE, reason="requires local scoring registry")
+def test_score_alert_evidence_reflects_actual_input_values():
+    """Evidence must show the real submitted value, not a derived flag --
+    proving a reviewer can trust it as ground truth for what was sent."""
+    sheets = load_raw_alerts()
+    row = sheets["CustomerViolation"].iloc[10]
+    fields = allowed_request_fields("customer_name")
+    raw = {c: (None if isinstance(row[c], float) and math.isnan(row[c]) else row[c]) for c in fields}
+
+    result = score_alert("customer_name", "evidence-test", raw)
+    assert result["evidence"]["matched_screening_pct"] == raw["Matched Screening %"]
+
+
+@pytest.mark.skipif(not REGISTRY_AVAILABLE, reason="requires local scoring registry")
+def test_score_alert_evidence_fields_differ_by_alert_type():
+    sheets = load_raw_alerts()
+
+    cv_row = sheets["CustomerViolation"].iloc[10]
+    cv_fields = allowed_request_fields("customer_name")
+    cv_raw = {c: (None if isinstance(cv_row[c], float) and math.isnan(cv_row[c]) else cv_row[c]) for c in cv_fields}
+    cv_result = score_alert("customer_name", "e1", cv_raw)
+
+    rule_row = sheets["Rule"].iloc[3]
+    rule_fields = allowed_request_fields("transaction_rule")
+    rule_raw = {c: (None if isinstance(rule_row[c], float) and math.isnan(rule_row[c]) else rule_row[c]) for c in rule_fields}
+    rule_result = score_alert("transaction_rule", "e2", rule_raw)
+
+    assert "matched_screening_pct" in cv_result["evidence"]
+    assert "rule_name" in rule_result["evidence"]
+    assert "matched_screening_pct" not in rule_result["evidence"]
+    assert "rule_name" not in cv_result["evidence"]

@@ -79,3 +79,22 @@ def test_review_queue_deterministic_for_fixed_seed():
 def test_sample_alert_unknown_alert_type_raises():
     with pytest.raises(KeyError):
         sample_alert("not_a_real_type")
+
+
+@pytest.mark.skipif(not DEMO_READY, reason="requires local raw data + scoring registry")
+def test_review_queue_includes_identity_block_for_entity_alert():
+    queue = build_review_queue("customer_name", n=3, seed=1)
+    for r in queue:
+        assert "identity" in r
+        assert r["identity"]["name"] is not None
+        assert r["identity"]["id"] is not None
+
+
+@pytest.mark.skipif(not DEMO_READY, reason="requires local raw data + scoring registry")
+def test_review_queue_rule_identity_has_no_dob_field():
+    """Rule sheet has no per-customer DOB field -- must be None, not a
+    KeyError or a wrong/fabricated value."""
+    queue = build_review_queue("transaction_rule", n=3, seed=1)
+    for r in queue:
+        assert r["identity"]["dob"] is None
+        assert r["identity"]["name"] is not None

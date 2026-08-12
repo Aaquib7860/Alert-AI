@@ -32,7 +32,11 @@ def get_sample_alert(alert_type: str = Query(...), seed: int | None = None) -> d
 
 
 @router.get("/review-queue")
-def get_review_queue(alert_type: str = Query(...), n: int = 10, seed: int | None = 42) -> dict:
+def get_review_queue(alert_type: str = Query(...), n: int = 10, seed: int | None = None) -> dict:
+    # seed=None -> build_review_queue seeds from system entropy, so each
+    # "Build review queue" click in the UI draws a fresh random sample
+    # instead of the same fixed set every time. Callers who want a
+    # reproducible queue (e.g. tests) still pass an explicit ?seed=.
     if alert_type not in ALERT_TYPE_TO_SHEET:
         raise HTTPException(status_code=400, detail=f"Unknown alert_type {alert_type!r}")
     try:

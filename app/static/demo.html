@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Alert Intelligence Engine -- PoC Demo</title>
-<link rel="stylesheet" href="/static/demo.css">
+<link rel="stylesheet" href="/static/demo.css?v=3">
 </head>
 <body>
   <header>
@@ -72,10 +72,13 @@
       <button id="build-queue-btn">Build review queue</button>
     </div>
     <div id="queue-panel" class="panel hidden">
-      <table id="queue-table">
-        <thead><tr><th>Rank</th><th>Alert ID</th><th>Global novelty</th><th>Status</th><th>What stood out</th></tr></thead>
-        <tbody></tbody>
-      </table>
+      <p class="note pii-warning">This table shows real customer data (name, DOB, ID, country) for local review purposes only &mdash; see app/services/demo_data.py for scope.</p>
+      <div class="table-scroll">
+        <table id="queue-table">
+          <thead id="queue-thead"></thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </div>
   </section>
 
@@ -111,6 +114,6 @@
     <p>Model scores are novelty percentiles against a training population   never a probability. Recommendation thresholds are PoC placeholders, not yet calibrated or approved. See <code>evaluation/phase9_demo_report.json</code> for full disclosure.</p>
   </footer>
 
-  <script src="/static/demo.js"></script>
+  <script src="/static/demo.js?v=3"></script>
 </body>
 </html>
