@@ -12,6 +12,8 @@
   --review-text: #f28b96;
   --lower-bg: #12301f;
   --lower-text: #6fd39a;
+  --borderline-bg: #332a12;
+  --borderline-text: #e0b35f;
 }
 
 * { box-sizing: border-box; }
@@ -103,6 +105,8 @@ th { color: var(--muted); font-weight: 600; }
 
 .rec-review { background: var(--review-bg); color: var(--review-text); padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600; }
 .rec-lower { background: var(--lower-bg); color: var(--lower-text); padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600; }
+.rec-borderline { background: var(--borderline-bg); color: var(--borderline-text); padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600; }
+.plain-label span { font-size: 1.1rem; }
 
 .novelty-bar-track { background: #0a0e18; border-radius: 6px; height: 14px; overflow: hidden; margin: 0.3rem 0; }
 .novelty-bar-fill { background: var(--accent); height: 100%; }

@@ -1,0 +1,95 @@
+{
+  "phase": "10_shadow_mode",
+  "status": "PASS",
+  "run_at": "2026-08-11T10:19:57.481520+00:00",
+  "shadow_log_path": "monitoring/shadow_log.jsonl",
+  "per_alert_type": {
+    "customer_name": {
+      "alert_type": "customer_name",
+      "n_test_split_rows": 537,
+      "n_scored": 537,
+      "n_errors": 0,
+      "error_rate": 0.0,
+      "error_samples": [],
+      "latency_ms": {
+        "mean": 20.63,
+        "p50": 20.26,
+        "p95": 21.72,
+        "p99": 23.05,
+        "max": 63.34
+      },
+      "recommendation_distribution": {
+        "REVIEW": 11,
+        "LOWER_TOUCH_CANDIDATE": 526
+      },
+      "plain_language_distribution": {
+        "Needs Review": 11,
+        "Not Confident": 63,
+        "Looks Routine": 463
+      }
+    },
+    "transaction_name": {
+      "alert_type": "transaction_name",
+      "n_test_split_rows": 484,
+      "n_scored": 484,
+      "n_errors": 0,
+      "error_rate": 0.0,
+      "error_samples": [],
+      "latency_ms": {
+        "mean": 21.93,
+        "p50": 21.51,
+        "p95": 23.3,
+        "p99": 29.54,
+        "max": 63.25
+      },
+      "recommendation_distribution": {
+        "REVIEW": 16,
+        "LOWER_TOUCH_CANDIDATE": 468
+      },
+      "plain_language_distribution": {
+        "Needs Review": 16,
+        "Not Confident": 27,
+        "Looks Routine": 441
+      }
+    },
+    "transaction_rule": {
+      "alert_type": "transaction_rule",
+      "n_test_split_rows": 596,
+      "n_scored": 596,
+      "n_errors": 0,
+      "error_rate": 0.0,
+      "error_samples": [],
+      "latency_ms": {
+        "mean": 19.42,
+        "p50": 19.05,
+        "p95": 20.16,
+        "p99": 22.94,
+        "max": 61.1
+      },
+      "recommendation_distribution": {
+        "REVIEW": 77,
+        "LOWER_TOUCH_CANDIDATE": 519
+      },
+      "plain_language_distribution": {
+        "Needs Review": 77,
+        "Not Confident": 157,
+        "Looks Routine": 362
+      }
+    }
+  },
+  "totals": {
+    "n_scored": 1617,
+    "n_errors": 0
+  },
+  "autonomous_action_invariant": {
+    "checked": true,
+    "all_clean": true,
+    "violating_alert_ids": [],
+    "statement": "1617 alerts scored and logged across all 3 alert types during this shadow-mode simulation. Zero autonomous actions taken -- every score was logged to the audit trail only, per master plan section 10/13."
+  },
+  "known_limitations": [
+    "This is an offline replay against historical held-out data, not live production traffic -- master plan section 10 shadow mode ultimately requires connection to the client's real alert stream, which is Phase 3 (Production Integration) scope.",
+    "Latency figures are single-process, local-machine timings -- not representative of production infrastructure/network conditions."
+  ],
+  "next_gate": "Phase 11 -- Production foundation (monitoring, registry, rollback, retraining) and Phase 12 (feedback learning / label quality gate). Requires human approval."
+}

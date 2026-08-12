@@ -61,12 +61,20 @@ function renderRawFields(fields) {
   document.getElementById("raw-fields-panel").classList.remove("hidden");
 }
 
+const PLAIN_LABEL_CLASS = {
+  "Needs Review": "rec-review",
+  "Not Confident": "rec-borderline",
+  "Looks Routine": "rec-lower",
+};
+
 function renderScoreResult(result) {
   const container = document.getElementById("score-result-content");
   container.innerHTML = "";
 
-  const recClass = result.recommendation === "REVIEW" ? "rec-review" : "rec-lower";
-  container.appendChild(el("p", {}, [el("span", { class: recClass, text: result.recommendation })]));
+  const labelClass = PLAIN_LABEL_CLASS[result.plain_language_label] || "rec-borderline";
+  container.appendChild(el("p", { class: "plain-label" }, [el("span", { class: labelClass, text: result.plain_language_label })]));
+  container.appendChild(el("p", { text: result.plain_language_detail }));
+  container.appendChild(el("p", { class: "note", text: `Technical recommendation: ${result.recommendation}` }));
   container.appendChild(el("p", { class: "note", text: result.recommendation_threshold_note }));
 
   container.appendChild(el("p", { text: `Global novelty: ${result.novelty.global}` }));
@@ -80,12 +88,12 @@ function renderScoreResult(result) {
   }));
   container.appendChild(el("p", { class: "note", text: result.novelty_scale_note }));
 
-  container.appendChild(el("p", { text: "Reason codes:" }));
-  if (result.reason_codes.length === 0) {
-    container.appendChild(el("p", { class: "note", text: "(none flagged)" }));
+  container.appendChild(el("p", { text: "What stood out:" }));
+  if (result.reason_codes_plain.length === 0) {
+    container.appendChild(el("p", { class: "note", text: "(nothing flagged)" }));
   } else {
     const chipRow = el("div");
-    result.reason_codes.forEach(c => chipRow.appendChild(el("span", { class: "chip", text: c })));
+    result.reason_codes_plain.forEach(c => chipRow.appendChild(el("span", { class: "chip", text: c })));
     container.appendChild(chipRow);
   }
 
@@ -151,13 +159,13 @@ document.getElementById("build-queue-btn").addEventListener("click", async () =>
   try {
     const data = await getJSON(`${API}/demo/review-queue?alert_type=${alertType}&n=${n}`);
     data.queue.forEach((r, i) => {
-      const recClass = r.recommendation === "REVIEW" ? "rec-review" : "rec-lower";
+      const labelClass = PLAIN_LABEL_CLASS[r.plain_language_label] || "rec-borderline";
       tbody.appendChild(el("tr", {}, [
         el("td", { text: i + 1 }),
         el("td", { text: r.alert_id }),
         el("td", { text: r.novelty.global }),
-        el("td", {}, [el("span", { class: recClass, text: r.recommendation })]),
-        el("td", { text: r.reason_codes.join(", ") || "-" }),
+        el("td", {}, [el("span", { class: labelClass, text: r.plain_language_label })]),
+        el("td", { text: r.reason_codes_plain.join("; ") || "-" }),
       ]));
     });
     document.getElementById("queue-panel").classList.remove("hidden");

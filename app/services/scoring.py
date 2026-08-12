@@ -168,6 +168,52 @@ def _reason_codes(sheet_name: str, normalized_row: pd.Series) -> list[str]:
     return codes
 
 
+# Plain-English translation for each internal reason code -- for UI
+# display only, the internal code is still returned in `reason_codes`.
+REASON_CODE_PLAIN_TEXT: dict[str, str] = {
+    "ALERTED_PARTY_DOB_MISSING": "Date of birth is missing for the alerted party.",
+    "HIT_DOB_UNRESOLVED": "The watchlist hit's date of birth could not be read reliably.",
+    "HIT_DOB_MULTI_VALUE": "The watchlist hit lists more than one possible date of birth.",
+    "HIT_NATIONALITY_MISSING": "The watchlist hit's nationality is missing.",
+    "HIGH_SCREENING_MATCH_PERCENTAGE": "The name-matching percentage from the screening system is very high.",
+    "BENEFICIARY_NAME_MISSING": "The beneficiary's name is missing.",
+    "BENEFICIARY_RELATIONSHIP_MISSING": "The relationship to the beneficiary is missing.",
+    "CURRENCY_NAME_MISSING": "The transaction currency is missing.",
+}
+
+# Gray-zone width (percentile points) below the REVIEW threshold that reads
+# as "borderline" rather than confidently routine. Same PoC-placeholder
+# status as REVIEW_PERCENTILE_THRESHOLD itself -- not calibrated/approved.
+BORDERLINE_BAND_WIDTH = 15.0
+
+
+def _plain_language_summary(global_percentile: float, review_threshold: float) -> dict:
+    """Three-tier, everyday-language summary of the score for UI display.
+
+    Deliberately avoids the words "match"/"not a match" anywhere -- master
+    plan section 5/12.1: the model never determines whether a name/entity
+    is a genuine sanctions match, only how unusual the alert looks against
+    historical patterns. "Needs Review" / "Not Confident" / "Looks
+    Routine" describe the *recommendation*, not a match verdict. This is
+    presentation only -- `recommendation` (REVIEW/LOWER_TOUCH_CANDIDATE)
+    remains the authoritative field; this never changes what gets routed.
+    """
+    if global_percentile >= review_threshold:
+        return {
+            "label": "Needs Review",
+            "detail": "This alert looks unusual compared to historical patterns.",
+        }
+    if global_percentile >= review_threshold - BORDERLINE_BAND_WIDTH:
+        return {
+            "label": "Not Confident",
+            "detail": "This alert is borderline -- not clearly usual or unusual.",
+        }
+    return {
+        "label": "Looks Routine",
+        "detail": "This alert looks similar to historical patterns.",
+    }
+
+
 def score_alert(alert_type: str, alert_id: str, raw_fields: dict[str, Any]) -> dict:
     if alert_type not in ALERT_TYPE_TO_SHEET:
         raise ValueError(f"Unknown alert_type {alert_type!r}. Must be one of {list(ALERT_TYPE_TO_SHEET)}")
@@ -210,8 +256,10 @@ def score_alert(alert_type: str, alert_id: str, raw_fields: dict[str, Any]) -> d
         customer_novelty = round((raw_score - customer_baseline["mean"]) / customer_baseline["std"], 3)
 
     recommendation = "REVIEW" if global_percentile >= REVIEW_PERCENTILE_THRESHOLD else "LOWER_TOUCH_CANDIDATE"
+    plain_language = _plain_language_summary(global_percentile, REVIEW_PERCENTILE_THRESHOLD)
 
     reason_codes = _reason_codes(sheet_name, normalized_row)
+    reason_codes_plain = [REASON_CODE_PLAIN_TEXT.get(c, c) for c in reason_codes]
 
     historical_context = {
         "customer_prior_alert_count": (
@@ -240,7 +288,10 @@ def score_alert(alert_type: str, alert_id: str, raw_fields: dict[str, Any]) -> d
             f"PoC placeholder threshold (global percentile >= {REVIEW_PERCENTILE_THRESHOLD}) -- "
             "not yet calibrated or approved for production routing (master plan section 13/15)."
         ),
+        "plain_language_label": plain_language["label"],
+        "plain_language_detail": plain_language["detail"],
         "reason_codes": reason_codes,
+        "reason_codes_plain": reason_codes_plain,
         "historical_context": historical_context,
         "scored_at": datetime.now(timezone.utc).isoformat(),
     }

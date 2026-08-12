@@ -57,7 +57,14 @@ class AlertScoreResponse(BaseModel):
     novelty_scale_note: str
     recommendation: Literal["REVIEW", "LOWER_TOUCH_CANDIDATE"]
     recommendation_threshold_note: str
+    plain_language_label: Literal["Needs Review", "Not Confident", "Looks Routine"] = Field(
+        description="Everyday-language summary for UI display. Never says 'match'/'not a "
+        "match' -- this describes the recommendation, not a sanctions-match determination. "
+        "`recommendation` remains the authoritative field."
+    )
+    plain_language_detail: str
     reason_codes: list[str]
+    reason_codes_plain: list[str] = Field(description="Plain-English translation of reason_codes, UI display only.")
     historical_context: HistoricalContext
     scored_at: datetime
 

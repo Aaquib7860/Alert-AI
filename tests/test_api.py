@@ -153,3 +153,41 @@ def test_feedback_endpoint_rejects_invalid_outcome(client, tmp_path, monkeypatch
         "compliance_outcome": "DEFINITELY_TRUE_MATCH",  # not in the allowed taxonomy
     })
     assert r.status_code == 422
+
+
+@pytest.mark.skipif(not REGISTRY_AVAILABLE, reason="requires scoring registry")
+def test_score_endpoint_writes_shadow_log_entry(client, tmp_path, monkeypatch):
+    from app.services.shadow_log import read_shadow_log
+
+    monkeypatch.setenv("SHADOW_LOG_PATH", str(tmp_path / "shadow.jsonl"))
+    raw = _real_payload("customer_name", "CustomerViolation")
+
+    r = client.post("/api/v1/alerts/score", json={
+        "alert_id": "shadow-api-test", "alert_type": "customer_name", "raw_fields": raw,
+    })
+    assert r.status_code == 200
+
+    entries = read_shadow_log()
+    assert len(entries) == 1
+    assert entries[0]["alert_id"] == "shadow-api-test"
+    assert entries[0]["autonomous_action_taken"] is False
+    assert entries[0]["source"] == "api"
+
+
+@pytest.mark.skipif(not REGISTRY_AVAILABLE, reason="requires scoring registry")
+def test_batch_score_endpoint_writes_one_shadow_entry_per_success(client, tmp_path, monkeypatch):
+    from app.services.shadow_log import read_shadow_log
+
+    monkeypatch.setenv("SHADOW_LOG_PATH", str(tmp_path / "shadow.jsonl"))
+    good = _real_payload("customer_name", "CustomerViolation")
+
+    r = client.post("/api/v1/alerts/batch-score", json={"alerts": [
+        {"alert_id": "b1", "alert_type": "customer_name", "raw_fields": good},
+        {"alert_id": "b2", "alert_type": "customer_name", "raw_fields": {"UIN": 1}},  # will fail
+    ]})
+    assert r.status_code == 200
+
+    entries = read_shadow_log()
+    assert len(entries) == 1  # only the successful one gets logged
+    assert entries[0]["alert_id"] == "b1"
+    assert all(e["source"] == "api_batch" for e in entries)

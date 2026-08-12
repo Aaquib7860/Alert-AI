@@ -29,6 +29,10 @@ models/registry/*
 feedback/*
 !feedback/.gitkeep
 
+# Runtime shadow-mode audit log (not source)
+monitoring/*
+!monitoring/.gitkeep
+
 # Notebooks checkpoints
 .ipynb_checkpoints/
 

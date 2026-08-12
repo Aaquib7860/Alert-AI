@@ -21,6 +21,7 @@ from app.services.feedback import record_feedback
 from app.services.model_info import find_model_info_by_version, get_all_active_model_info, models_health
 from app.services.model_registry import ModelNotActiveError
 from app.services.scoring import AlertValidationError, score_alert
+from app.services.shadow_log import record_shadow_score
 
 router = APIRouter(prefix="/api/v1")
 
@@ -65,6 +66,10 @@ def score_single_alert(request: AlertScoreRequest) -> AlertScoreResponse:
         raise HTTPException(status_code=503, detail=str(e))
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    # Shadow mode (master plan section 10): every real score gets an audit
+    # record, no downstream action is ever triggered by it -- this line
+    # writes the log entry and nothing else.
+    record_shadow_score(result, source="api")
     return AlertScoreResponse(**result)
 
 
@@ -76,6 +81,7 @@ def score_batch(request: BatchScoreRequest) -> BatchScoreResponse:
     for alert in request.alerts:
         try:
             result = score_alert(alert.alert_type, alert.alert_id, alert.raw_fields)
+            record_shadow_score(result, source="api_batch")
             results.append(AlertScoreResponse(**result))
         except AlertValidationError as e:
             errors.append(AlertScoreError(

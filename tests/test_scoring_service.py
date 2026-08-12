@@ -6,7 +6,9 @@ import pytest
 from app.services.scoring import (
     AlertValidationError,
     LIVE_REQUIRED_FIELDS,
+    REASON_CODE_PLAIN_TEXT,
     _percentile,
+    _plain_language_summary,
     _reason_codes,
     allowed_request_fields,
     score_alert,
@@ -103,6 +105,46 @@ def test_reason_codes_rule_sheet():
     })
     codes = _reason_codes("Rule", row)
     assert set(codes) == {"BENEFICIARY_NAME_MISSING", "BENEFICIARY_RELATIONSHIP_MISSING"}
+
+
+def test_plain_language_summary_needs_review_at_or_above_threshold():
+    summary = _plain_language_summary(80.0, review_threshold=80.0)
+    assert summary["label"] == "Needs Review"
+
+
+def test_plain_language_summary_not_confident_in_gray_zone():
+    # threshold=80, band=15 -> [65, 80) is the gray zone
+    summary = _plain_language_summary(70.0, review_threshold=80.0)
+    assert summary["label"] == "Not Confident"
+
+
+def test_plain_language_summary_looks_routine_well_below_threshold():
+    summary = _plain_language_summary(10.0, review_threshold=80.0)
+    assert summary["label"] == "Looks Routine"
+
+
+def test_plain_language_summary_never_uses_match_language():
+    for pct in (0.0, 30.0, 65.0, 80.0, 100.0):
+        summary = _plain_language_summary(pct, review_threshold=80.0)
+        combined = (summary["label"] + " " + summary["detail"]).lower()
+        assert "match" not in combined
+
+
+def test_reason_code_plain_text_covers_every_code_reason_codes_can_emit():
+    # every code _reason_codes can possibly emit must have a plain-text translation
+    row_all_flagged = pd.Series({
+        "Alerted Party DOB_missing": True,
+        "Hit Details (DOB) (Unresolved)": True,
+        "Hit Details (DOB) (MultiValue)": True,
+        "Hit Details (Nationality)_missing": True,
+        "Matched Screening % (Parsed)": 99.0,
+        "Beneficiary Name_missing": True,
+        "Beneficiary Relationship_missing": True,
+        "Currency Name_missing": True,
+    })
+    all_codes = _reason_codes("CustomerViolation", row_all_flagged) + _reason_codes("Rule", row_all_flagged)
+    for code in all_codes:
+        assert code in REASON_CODE_PLAIN_TEXT
 
 
 def test_score_alert_unknown_alert_type_raises():
