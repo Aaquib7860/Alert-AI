@@ -34,9 +34,13 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 import sys
 sys.path.insert(0, str(REPO_ROOT))
 
-from pipelines.entity.anomaly_models import extract_name_representation_matrix, score_ocsvm
+from pipelines.entity.anomaly_models import (
+    extract_name_representation_matrix,
+    extract_tabular_matrix,
+    score_ocsvm,
+)
 from pipelines.entity.combined_dataset import build_combined_entity_dataset
-from pipelines.entity.validation_splits import group_split_by_customer
+from pipelines.entity.validation_splits import group_split_by_customer, time_forward_split
 from pipelines.normalization.pipeline import run_phase2_pipeline
 from pipelines.validation.schema_registry import SCHEMA_VERSION
 from features.entity_features import transform_entity_features
@@ -83,13 +87,36 @@ def build_entity_registry() -> dict:
     champion_path = REPO_ROOT / "models" / "entity" / champion_manifest["artifact_file"]
     payload = joblib.load(champion_path)
 
-    train_idx, _ = group_split_by_customer(combined, test_size=0.25, random_state=42)
+    # Which split the champion actually came from -- must NOT assume
+    # "unseen_customers" forever. Caught by a real bug: E9 (combined_svd)
+    # won under repeat_customers_time_forward, and this script still
+    # rebuilt the group split, silently training the registry on the
+    # wrong population.
+    scenario = payload["validation_scenario"]
+    if scenario == "unseen_customers":
+        train_idx, _ = group_split_by_customer(combined, test_size=0.25, random_state=42)
+    elif scenario == "repeat_customers_time_forward":
+        train_idx, _ = time_forward_split(
+            combined, "Alert Generated Date & Time (Parsed)", test_frac=0.25
+        )
+    else:
+        raise ValueError(f"Unknown validation_scenario {scenario!r} in champion manifest")
     train_df = combined.iloc[train_idx].reset_index(drop=True)
 
     artifacts = payload["entity_feature_artifacts"]
     train_matrix, _ = transform_entity_features(train_df, "CombinedEntity", artifacts)
-    name_train = extract_name_representation_matrix(train_matrix, artifacts)
-    X_train = payload["svd"].transform(name_train) if payload["svd"] is not None else name_train
+
+    representation = payload["representation"]
+    if representation == "name_svd":
+        repr_train = extract_name_representation_matrix(train_matrix, artifacts)
+    elif representation == "tabular":
+        repr_train = extract_tabular_matrix(train_matrix, artifacts)
+    elif representation == "combined_svd":
+        repr_train = train_matrix
+    else:
+        raise ValueError(f"Unknown representation {representation!r} in champion manifest")
+
+    X_train = payload["svd"].transform(repr_train) if payload["svd"] is not None else repr_train
 
     score_fn = _score_fn(payload["model_kind"])
     train_scores = score_fn(payload["model"], X_train)
@@ -125,12 +152,30 @@ def build_transaction_registry() -> dict:
     champion_path = REPO_ROOT / "models" / "transaction" / champion_manifest["artifact_file"]
     payload = joblib.load(champion_path)
 
-    train_idx, _ = group_split_by_customer(rule_df, test_size=0.25, random_state=42)
+    # Same scenario/representation-tracking discipline as the entity
+    # registry above -- never assume, always read from the manifest.
+    scenario = payload["validation_scenario"]
+    if scenario == "unseen_customers":
+        train_idx, _ = group_split_by_customer(rule_df, test_size=0.25, random_state=42)
+    elif scenario == "repeat_customers_time_forward":
+        train_idx, _ = time_forward_split(rule_df, "Scan Date (Parsed)", test_frac=0.25)
+    else:
+        raise ValueError(f"Unknown validation_scenario {scenario!r} in champion manifest")
     train_df = rule_df.iloc[train_idx].reset_index(drop=True)
 
     artifacts = payload["transaction_feature_artifacts"]
     train_matrix, _ = transform_transaction_features(train_df, artifacts)
-    X_train = payload["svd"].transform(train_matrix) if payload["svd"] is not None else train_matrix
+
+    representation = payload["representation"]
+    if representation == "structured":
+        from pipelines.transaction.anomaly_models import extract_structured_matrix
+        repr_train = extract_structured_matrix(train_matrix, artifacts)
+    elif representation == "behavioural_svd":
+        repr_train = train_matrix
+    else:
+        raise ValueError(f"Unknown representation {representation!r} in champion manifest")
+
+    X_train = payload["svd"].transform(repr_train) if payload["svd"] is not None else repr_train
 
     score_fn = _score_fn(payload["model_kind"])
     train_scores = score_fn(payload["model"], X_train)

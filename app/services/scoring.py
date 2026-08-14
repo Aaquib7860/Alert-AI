@@ -30,7 +30,11 @@ import os
 from app.services.model_registry import ALERT_TYPE_TO_SHEET, LoadedModel, load_active_model
 from features.entity_features import transform_entity_features
 from features.transaction_features import transform_transaction_features
-from pipelines.entity.anomaly_models import extract_name_representation_matrix, score_ocsvm
+from pipelines.entity.anomaly_models import (
+    extract_name_representation_matrix,
+    extract_tabular_matrix,
+    score_ocsvm,
+)
 from pipelines.normalization.pipeline import normalize_sheet
 from pipelines.validation.schema_registry import SCHEMA_REGISTRY
 
@@ -274,7 +278,23 @@ def score_alert(alert_type: str, alert_id: str, raw_fields: dict[str, Any]) -> d
     if alert_type in ("customer_name", "transaction_name"):
         normalized["alert_source_sheet"] = sheet_name
         matrix, _ = transform_entity_features(normalized, "CombinedEntity", loaded.feature_artifacts)
-        representation_matrix = extract_name_representation_matrix(matrix, loaded.feature_artifacts)
+        # Which slice of the full feature matrix the *active* champion was
+        # actually fit on -- this must track whatever Phase 5 selected, not
+        # assume "name_svd" forever. Caught by a real bug: an earlier
+        # version of this function hardcoded name-only extraction, which
+        # broke the moment a combined-representation champion (E9) won.
+        if loaded.representation == "name_svd":
+            representation_matrix = extract_name_representation_matrix(matrix, loaded.feature_artifacts)
+        elif loaded.representation == "tabular":
+            representation_matrix = extract_tabular_matrix(matrix, loaded.feature_artifacts)
+        elif loaded.representation == "combined_svd":
+            # combined_svd == name blocks + tabular blocks concatenated in
+            # that order, which is exactly the full matrix's own column
+            # order (see features/entity_features.py block order) -- no
+            # slicing needed.
+            representation_matrix = matrix
+        else:
+            raise ValueError(f"Unknown entity representation {loaded.representation!r} for active model")
     else:
         matrix, _ = transform_transaction_features(normalized, loaded.feature_artifacts)
         representation_matrix = matrix
